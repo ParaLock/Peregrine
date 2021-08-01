@@ -8,6 +8,9 @@ import Header from './Components/Header'
 import WorkflowForm from './Components/WorkflowForm'
 import TaskForm from './Components/TaskForm'
 import TaskPanel from './Components/TaskPanel'
+import ActionForm from './Components/ActionForm'
+
+import _ from 'lodash'
 
 import createEngine, { 
 	DefaultLinkModel, 
@@ -100,6 +103,17 @@ const saveFile = async (blob) => {
 	a.click();
 };
 
+function removeIf(array, callback) {
+    var i = 0;
+    while (i < array.length) {
+        if (callback(array[i], i)) {
+            array.splice(i, 1);
+        }
+        else {
+            ++i;
+        }
+    }
+}
 
 class App extends React.Component {
 
@@ -125,6 +139,7 @@ class App extends React.Component {
 					workflowPanelOpen: false,
 					taskPanelOpen: false,
 					taskFormOpen: false,
+					actionFormOpen: false,
 					actionPanelOpen: false,
 					selectedTask: null,
 					selectedWorkflow: null,
@@ -147,6 +162,24 @@ class App extends React.Component {
 			}
 		}
 
+		removeTask(name) {
+
+			var newState = [...this.state.workflows]
+			var workflowName = this.state.selectedWorkflow.NAME;
+			var workflow = newState.filter((item) => item.NAME == workflowName)[0]
+
+			removeIf(workflow.TASKS, (item) => {
+
+				return item.NAME == name;
+			})
+
+			this.setState({workflows: newState}, () => {
+
+				this.setState({selectedWorkflow: workflow})
+			})
+			
+		}
+
 		handleNodeEvent(evt) {
 
 			console.log("Node event: ")
@@ -154,6 +187,10 @@ class App extends React.Component {
 
 			if(evt.function == "selectionChanged") {
 				this.handleNodeSelect(evt);
+			}
+
+			if(evt.function == "entityRemoved") {
+				this.removeTask(evt.entity.options.name)
 			}
 		}
 
@@ -199,6 +236,8 @@ class App extends React.Component {
 					color: 'rgb(0,192,255)',
 				});
 	
+				console.log(node)
+
 				node.registerListener({
 					eventDidFire: (evt) => {
 						this.handleNodeEvent(evt)
@@ -219,8 +258,8 @@ class App extends React.Component {
 			this.toggleTaskForm(false)
 		}
 
-		toggleActionForm() {
-
+		toggleActionForm(state) {
+			this.setState({actionFormOpen: state});
 		}
 
 		toggleWorkflowPanel() {
@@ -238,6 +277,7 @@ class App extends React.Component {
 			this.setState({taskFormOpen: state})
 		}
 
+
 		toggleTaskPanel() {
 			this.setState({taskPanelOpen: !this.state.taskPanelOpen});
 		}
@@ -254,18 +294,39 @@ class App extends React.Component {
 			});
 		}
 
-		taskSelected(event, task) {
+		onAddAction(taskName) {
+
+			var task = this.state.selectedWorkflow.TASKS.filter((item) => item.NAME == taskName)[0];
+
+			this.taskSelected({}, task, ()=> {
+
+				this.toggleActionForm(true)
+
+			});
+
+		}
+
+		addAction(data) {
+
+		}
+
+		taskSelected(event, task, callback = () => {}) {
 		
-			this.setState({selectedTask: task});
-			
-			var prevSelected = Object.values(this.state.selectedWorkflow.DIAGRAM.activeNodeLayer.models).filter((item) => item.options.selected == true);
-			var node = Object.values(this.state.selectedWorkflow.DIAGRAM.activeNodeLayer.models).filter((item) => item.options.name == task.NAME)[0];
+			this.setState({selectedTask: task}, ()=> {
 
-			for(var i in prevSelected) {
-				prevSelected[i].setSelected(false)
-			}
+				var prevSelected = Object.values(this.state.selectedWorkflow.DIAGRAM.activeNodeLayer.models).filter((item) => item.options.selected == true);
+				var node = Object.values(this.state.selectedWorkflow.DIAGRAM.activeNodeLayer.models).filter((item) => item.options.name == task.NAME)[0];
+	
+				for(var i in prevSelected) {
+					prevSelected[i].setSelected(false)
+				}
+	
+				node.setSelected()
 
-			node.setSelected()
+				callback()
+
+			});
+
 		}
 
 		async onUpload(e) {
@@ -292,6 +353,18 @@ class App extends React.Component {
 					}
 
 					workflows[i].DIAGRAM = newModel;
+
+				
+					const nodes = workflows[i].DIAGRAM.getNodes();
+					
+					//  console.log(nodes)
+
+					_.forEach(nodes, node => {
+					  node.registerListener({
+						eventDidFire: e => this.handleNodeEvent(e)
+					  });
+					});
+
 				}
 
 				this.setState({workflows: [...workflows]}, ()=> {
@@ -367,6 +440,13 @@ class App extends React.Component {
 						onAdd={(data) => this.addTask(data)}
         		/>
 
+				<ActionForm 
+                        actions={(this.state.selectedTask) ? this.state.selectedTask.ACTIONS : null }
+                        open={this.state.actionFormOpen} 
+                        onClose={() => this.toggleActionForm(false)}
+						onAdd={(data) => this.addAction(data)}
+        		/>
+
 				<Header	
 				
 					onToggleWorkflowPanel={this.toggleWorkflowPanel.bind(this)} 
@@ -397,7 +477,7 @@ class App extends React.Component {
 											selectedWorkflow={this.state.selectedWorkflow} 
 											selectedTask={this.state.selectedTask}
 											onAddTask={() => this.toggleTaskForm(true)}
-											onAddAction={() => this.onAddAction()}
+											onAddAction={(taskName) => this.onAddAction(taskName)}
 							/> 
 
 					</TaskPanelWrapper>

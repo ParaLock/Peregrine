@@ -22,10 +22,6 @@
                     "NAME": "Create PR",
                     "ACTIONS": [
 
-                    ],
-                    "PARENTS": [
-                        "Create JIRA Ticket",
-                        "Branch From Stabilization"
                     ]
                 }
             ]
@@ -45,8 +41,7 @@
                     "NAME": "Remove non-relevant robots",
                     "ACTIONS": [
 
-                    ],
-                    "PARENTS": ["Clone current ci-gate lists"]
+                    ]
                 }
             ]
         }
