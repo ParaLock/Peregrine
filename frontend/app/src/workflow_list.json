@@ -5,10 +5,28 @@
             "DESCRIPTION": "This workflow handles the deployment of a new Rabbit stabilization release!",
             "TASKS": [
                 {
+                    "NAME": "Create JIRA Ticket",
+                    "ACTIONS": [
 
+                    ],
+                    "PARENTS": []
                 },
                 {
+                    "NAME": "Branch From Stabilization",
+                    "ACTIONS": [
 
+                    ],
+                    "PARENTS": []
+                },
+                {
+                    "NAME": "Create PR",
+                    "ACTIONS": [
+
+                    ],
+                    "PARENTS": [
+                        "Create JIRA Ticket",
+                        "Branch From Stabilization"
+                    ]
                 }
             ]
         },
@@ -17,10 +35,18 @@
             "DESCRIPTION": "This workflow generates new test suites for an RTL release.",
             "TASKS": [
                 {
+                    "NAME": "Clone current ci-gate lists",
+                    "ACTIONS": [
 
+                    ],
+                    "PARENTS": []
                 },
                 {
-                    
+                    "NAME": "Remove non-relevant robots",
+                    "ACTIONS": [
+
+                    ],
+                    "PARENTS": ["Clone current ci-gate lists"]
                 }
             ]
         }

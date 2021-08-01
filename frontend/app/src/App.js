@@ -6,6 +6,7 @@ import './App.css';
 import WorkflowPanel from './Components/WorkflowPanel'
 import Header from './Components/Header'
 import WorkflowForm from './Components/WorkflowForm'
+import TaskPanel from './Components/TaskPanel'
 
 import InitialWorkflows from './workflow_list.json'
 
@@ -31,19 +32,49 @@ const Columns = styled.div `
 	width: 100%;
 	height: calc(100% - 50px);
 	display: flex;
-	flex-direction: row;
+
+	overflow:hidden;
+	flex-direction: column;
 `;
 
-const SidebarWrapper = styled.div`
+const WorkflowPanelWrapper = styled.div`
     display: flex;
-		position: absolute;
+	position: absolute;
     border-radius: 16px;
     width: 400px;
 		
+	transform: ${props => props.open ? "translateX(0%)" : "translateX(-100%)"};
+	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms;
+
+	opacity: ${props => props.open ? "1" : "0"};
+
+	z-index: 1000;
     height: calc(100% - 50px);
 
-		pointer-events:none;
+	pointer-events:none;
 `;
+
+const TaskPanelWrapper = styled.div`
+	
+	display: flex;
+	
+	position: absolute;
+	overflow:hidden;
+
+	right: 0;
+
+	max-width: ${props => props.open ? "100%" : "0%"};
+	transform: ${props => props.open ? "translateX(0%)" : "translateX(100%)"};
+	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms;
+	opacity: ${props => props.open ? "1" : "0"};
+
+	z-index: 1000;
+
+	height: calc(100% - 50px);
+
+	pointer-events:none;
+`;
+
 
 
 class App extends React.Component {
@@ -52,33 +83,98 @@ class App extends React.Component {
 				super(props)
 
 				this.engine = createEngine();
-				const node1 = new DefaultNodeModel({
-					name: 'Node 1',
-					color: 'rgb(0,192,255)',
-				});
-				node1.setPosition(100, 100);
-				let port1 = node1.addOutPort('Out');
+				// const node1 = new DefaultNodeModel({
+				// 	name: 'Node 1',
+				// 	color: 'rgb(0,192,255)',
+				// });
+				// node1.setPosition(100, 100);
+				// let port1 = node1.addOutPort('Out');
 
-				const node2 = new DefaultNodeModel({
-					name: 'Node 1',
-					color: 'rgb(0,192,255)',
-				});
-				node2.setPosition(100, 100);
-				let port2 = node2.addOutPort('Out');
+				// const node2 = new DefaultNodeModel({
+				// 	name: 'Node 1',
+				// 	color: 'rgb(0,192,255)',
+				// });
+				// node2.setPosition(100, 100);
+				// let port2 = node2.addOutPort('Out');
 
-				const link = port1.link<DefaultLinkModel>(port2);
-				//link.addLabel('Hello World!');
+				//const link = port1.link<DefaultLinkModel>(port2);
 
-				const model = new DiagramModel();
-				model.addAll(node1, node2, link);
-				this.engine.setModel(model);
+
+				this.model = new DiagramModel();
+				// model.addAll(node1, node2, link);
+				this.engine.setModel(this.model);
 
 				this.state = {
-					sidebarOpen: false,
-					selectedWorkflow: {},
+					workflowPanelOpen: false,
+					taskPanelOpen: false,
+					selectedTask: null,
+					selectedWorkflow: null,
 					workflows: InitialWorkflows.workflows,
 					workflowFormOpen: false
 				}
+
+		}
+
+		generateNode(taskName, task, tasks, visitedList, previous, model) {
+
+
+			if(!(taskName in visitedList)) {
+
+				const node = new DefaultNodeModel({
+					name: taskName,
+					color: 'rgb(0,192,255)',
+				});
+	
+				node.setPosition(100, 100);
+
+				visitedList[taskName] = true;
+
+				model.addNode(node)
+
+				var input = node.addInPort('IN');
+				var output = node.addOutPort('OUT');
+
+				task.output = output;
+				task.input = input;
+
+			}
+
+			//if we have a previousOutput we are a child of a parent node.
+			if(previous) {
+
+				const link = task.output.link(previous.input);
+
+				model.addLink(link)
+			}
+
+			for(var i in task.PARENTS) {
+
+				var parentName = task.PARENTS[i];
+
+				this.generateNode(parentName, tasks[parentName], tasks, visitedList, task, model)
+			}
+		}
+
+		createModel(workflow) {
+
+			var hashedTasks = {}
+
+			for(var i in workflow.TASKS) {
+
+				hashedTasks[workflow.TASKS[i].NAME] = workflow.TASKS[i]
+			}
+
+			var visited = {}
+
+			workflow.DIAGRAM = new DiagramModel();
+			
+			var taskNames = Object.keys(hashedTasks)
+			
+
+			for(var tasksIdx in taskNames) {
+
+				this.generateNode(taskNames[tasksIdx], hashedTasks[taskNames[tasksIdx]], hashedTasks, visited, null, workflow.DIAGRAM);
+			}
 
 		}
 
@@ -86,7 +182,9 @@ class App extends React.Component {
 
 			var newWorkflow = {
 				NAME: data.name,
-				DESCRIPTION: data.description
+				DESCRIPTION: data.description,
+				TASKS: [],
+				DIAGRAM: new DiagramModel()
 			}
 
 			this.setState({workflows: [...this.state.workflows, newWorkflow]}, 
@@ -100,9 +198,9 @@ class App extends React.Component {
 
 		}
 
-		toggleSidebar() {
+		toggleWorkflowPanel() {
 
-			this.setState({sidebarOpen: !this.state.sidebarOpen});
+			this.setState({workflowPanelOpen: !this.state.workflowPanelOpen});
 		}
 
 		toggleWorkflowForm(state) {
@@ -110,12 +208,35 @@ class App extends React.Component {
 			this.setState({workflowFormOpen: state});
 		}
 
+		toggleTaskPanel() {
+			this.setState({taskPanelOpen: !this.state.taskPanelOpen});
+		}
+
 		workflowSelected(event, workflow) {
 
-			this.setState({selectedWorkflow: workflow});
+			this.setState({selectedWorkflow: workflow}, () => {
+				
+
+				if(!workflow.DIAGRAM) {
+
+					this.createModel(workflow);
+				}
+
+
+				this.engine.setModel(workflow.DIAGRAM)
+				this.forceUpdate()
+
+			});
+
+
+		}
+
+		taskSelected(event, task) {
+			this.setState({selectedTask: task});
 		}
 
 		render() {
+
 
 			return <Wrapper>
 
@@ -124,22 +245,40 @@ class App extends React.Component {
                         open={this.state.workflowFormOpen} 
                         onConnect={(data)=> { this.toggleWorkflowForm(false); this.addWorkflow(data)}}
                         onClose={() => this.toggleWorkflowForm(false)}
-												onAdd={(data) => this.addWorkflow(data)}
+						onAdd={(data) => this.addWorkflow(data)}
         />
 
-				<Header	onToggleSidebar={this.toggleSidebar.bind(this)} ></Header>
+				<Header	
+				
+					onToggleWorkflowPanel={this.toggleWorkflowPanel.bind(this)} 
+					onToggleTaskPanel={this.toggleTaskPanel.bind(this)}
+
+
+				></Header>
 
 				<Columns>
 
-					<SidebarWrapper>
+					<WorkflowPanelWrapper open={this.state.workflowPanelOpen}>
 							<WorkflowPanel 
-											open={this.state.sidebarOpen}  
+											open={this.state.workflowPanelOpen}  
 											workflowSelected={this.workflowSelected.bind(this)} 
 											selectedWorkflow={this.state.selectedWorkflow} 
 											workflows={this.state.workflows}
 											onAddWorkflow={() => this.toggleWorkflowForm(true)}
 							/> 
-					</SidebarWrapper>
+					</WorkflowPanelWrapper>
+
+					<TaskPanelWrapper open={this.state.taskPanelOpen}>
+
+							<TaskPanel 
+											open={this.state.taskPanelOpen}  
+											taskSelected={this.taskSelected.bind(this)} 
+											selectedWorkflow={this.state.selectedWorkflow} 
+											selectedTask={this.state.selectedTask}
+											onAddTask={() => this.toggleTaskForm(true)}
+							/> 
+
+					</TaskPanelWrapper>
 
 					<CanvasWidget className="graphContainer" engine={this.engine} />
 

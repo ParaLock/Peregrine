@@ -28,26 +28,10 @@ const StyledListItem = withStyles({
       }
 })(ListItem);
 
-const openStyle = {
-
-    transform: 'translateX(0%)',
-    opacity: 1,
-    maxWidth: '100%',
-    transition: 'opacity 250ms, transform 250ms ease-in-out, max-width 250ms'
-};
-
-const closeStyle = {
-    opacity: 0,
-    maxWidth: 0,
-    transform: 'translateX(-100%)',
-    transition: 'opacity 250ms, transform 250ms ease-in-out, max-width 250ms'
-};
-
-
 const ListWrapper = styled.div`
     height: 100%;
     border: 1px solid #ccc;
-    width: ${props => props.open ? "30%" : "100%"};
+    width: 100%;
     margin-right: 3px;
     background-color: white;
 `;
@@ -73,9 +57,7 @@ class WorkflowPanel extends React.Component {
 
     render() {
         return (
-            <Wrapper 
-                style={(this.props.open) ? openStyle : closeStyle} id="sidebar_wrapper"
-            >
+            <Wrapper >
                 <ListWrapper>
 
                     <Paper  elevation={3} >
@@ -89,14 +71,11 @@ class WorkflowPanel extends React.Component {
                             >
                                 <Divider/>
 
-                                {
-                                    this.props.workflows.map((workflow)=> {
-
-                                        console.log()
+                                { this.props.workflows.map((workflow)=> {
 
                                         return <StyledListItem
                                             button
-                                            selected={this.props.selectedWorkflow.NAME === workflow.NAME}
+                                            selected={(this.props.selectedWorkflow) ? this.props.selectedWorkflow.NAME === workflow.NAME : false}
                                             onClick={(event) => this.props.workflowSelected(event, workflow)}
                                         >
                                             <ListItemText primary={workflow.NAME} secondary={workflow.DESCRIPTION} />

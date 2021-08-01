@@ -4,7 +4,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-
+import AssignmentIcon from '@material-ui/icons/Assignment';
+import Box from '@material-ui/core/Box';
 
 export default class Header extends React.Component {
 
@@ -22,16 +23,28 @@ export default class Header extends React.Component {
                 position="relative"
               >
                 <Toolbar variant="dense">
-                  <IconButton
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={this.props.onToggleSidebar.bind(this)}
-                    edge="start"
-        
-                  >
-                    <MenuIcon />
-                  </IconButton>
-                    {this.props.children}
+
+                    <Box display='flex' flexGrow={1}>
+                      <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={this.props.onToggleWorkflowPanel.bind(this)}
+                        edge="start"
+            
+                      >
+                        <MenuIcon />
+                      </IconButton>
+                    </Box>
+                    <IconButton
+                      color="inherit"
+                      aria-label="open drawer"
+                      onClick={this.props.onToggleTaskPanel.bind(this)}
+                      edge="start"
+          
+                    >
+                      <AssignmentIcon />
+                    </IconButton>
+                  {this.props.children}
                 </Toolbar>
               </AppBar>
             </div>
