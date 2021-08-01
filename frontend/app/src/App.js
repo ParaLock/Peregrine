@@ -6,9 +6,8 @@ import './App.css';
 import WorkflowPanel from './Components/WorkflowPanel'
 import Header from './Components/Header'
 import WorkflowForm from './Components/WorkflowForm'
+import TaskForm from './Components/TaskForm'
 import TaskPanel from './Components/TaskPanel'
-
-import InitialWorkflows from './workflow_list.json'
 
 import createEngine, { 
 	DefaultLinkModel, 
@@ -61,24 +60,45 @@ const WorkflowPanelWrapper = styled.div`
 const TaskPanelWrapper = styled.div`
 	
 	display: flex;
-	
 	position: absolute;
 	overflow:hidden;
-
 	right: 0;
-
 	max-width: ${props => props.open ? "100%" : "0%"};
 	transform: ${props => props.open ? "translateX(0%)" : "translateX(100%)"};
 	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms;
 	opacity: ${props => props.open ? "1" : "0"};
-
 	z-index: 1000;
-
 	height: calc(100% - 50px);
-
 	pointer-events:none;
 `;
 
+const ActionPanelWrapper = styled.div`
+	
+	display: flex;
+	position: absolute;
+	overflow:hidden;
+	right: 0;
+	max-width: ${props => props.open ? "100%" : "0%"};
+	transform: ${props => props.open ? "translateX(-400px)" : "translateX(100%)"};
+	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms;
+	opacity: ${props => props.open ? "1" : "0"};
+	z-index: 1000;
+	height: calc(100% - 50px);
+	pointer-events:none;
+`;
+
+const saveFile = async (blob) => {
+	const a = document.createElement('a');
+
+	var d = new Date().toISOString().split('T')[0]
+
+	a.download = "beaver-session-" + d  + '.json';
+	a.href = URL.createObjectURL(blob);
+	a.addEventListener('click', (e) => {
+	  setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
+	});
+	a.click();
+};
 
 
 class App extends React.Component {
@@ -104,9 +124,11 @@ class App extends React.Component {
 				this.state = {
 					workflowPanelOpen: false,
 					taskPanelOpen: false,
+					taskFormOpen: false,
+					actionPanelOpen: false,
 					selectedTask: null,
 					selectedWorkflow: null,
-					workflows: InitialWorkflows.workflows,
+					workflows: [],
 					workflowFormOpen: false
 				}
 
@@ -117,14 +139,12 @@ class App extends React.Component {
 			if(evt.isSelected) {
 
 				var task = this.state.selectedWorkflow.TASKS.filter((item) => item.NAME == evt.entity.options.name);
-	
-				console.log(task[0]);
 
 				this.setState({selectedTask: task[0]});
 			} else {
+				
 				this.setState({selectedTask: null});
 			}
-
 		}
 
 		handleNodeEvent(evt) {
@@ -135,75 +155,6 @@ class App extends React.Component {
 			if(evt.function == "selectionChanged") {
 				this.handleNodeSelect(evt);
 			}
-		}
-
-		generateNode(taskName, task, tasks, visitedList, previous, model) {
-
-
-			if(!(taskName in visitedList)) {
-
-				const node = new DefaultNodeModel({
-					name: taskName,
-					color: 'rgb(0,192,255)',
-				});
-	
-				node.registerListener({
-					eventDidFire: (evt) => {
-						this.handleNodeEvent(evt)
-					}	
-				});
-
-				node.setPosition(1000, 500);
-
-				visitedList[taskName] = true;
-
-				model.addNode(node)
-
-				var input = node.addInPort('IN');
-				var output = node.addOutPort('OUT');
-
-				task.output = output;
-				task.input = input;
-
-			}
-
-			//if we have a previousOutput we are a child of a parent node.
-			if(previous) {
-
-				const link = task.output.link(previous.input);
-
-				model.addLink(link)
-			}
-
-			for(var i in task.PARENTS) {
-
-				var parentName = task.PARENTS[i];
-
-				this.generateNode(parentName, tasks[parentName], tasks, visitedList, task, model)
-			}
-		}
-
-		createModel(workflow) {
-
-			var hashedTasks = {}
-
-			for(var i in workflow.TASKS) {
-
-				hashedTasks[workflow.TASKS[i].NAME] = workflow.TASKS[i]
-			}
-
-			var visited = {}
-
-			workflow.DIAGRAM = new DiagramModel();
-			
-			var taskNames = Object.keys(hashedTasks)
-			
-
-			for(var tasksIdx in taskNames) {
-
-				this.generateNode(taskNames[tasksIdx], hashedTasks[taskNames[tasksIdx]], hashedTasks, visited, null, workflow.DIAGRAM);
-			}
-
 		}
 
 		addWorkflow(data) {
@@ -226,6 +177,52 @@ class App extends React.Component {
 
 		}
 
+		addTask(data) {
+
+			if(this.state.selectedWorkflow) {
+
+				var newTask = {
+					NAME: data.name,
+					ACTIONS: [
+						{
+							NAME: "test1"
+						},
+						{
+							NAME: "test2"
+						}
+					],
+					PARENTS: []
+				}
+
+				const node = new DefaultNodeModel({
+					name: data.name,
+					color: 'rgb(0,192,255)',
+				});
+	
+				node.registerListener({
+					eventDidFire: (evt) => {
+						this.handleNodeEvent(evt)
+					}	
+				});
+
+				var input = node.addInPort('IN');
+				var output = node.addOutPort('OUT');
+
+				var oldWorkflow = {...this.state.selectedWorkflow};
+
+				oldWorkflow.TASKS.push(newTask);
+
+				this.state.selectedWorkflow.DIAGRAM.addNode(node)
+	
+			}
+
+			this.toggleTaskForm(false)
+		}
+
+		toggleActionForm() {
+
+		}
+
 		toggleWorkflowPanel() {
 
 			this.setState({workflowPanelOpen: !this.state.workflowPanelOpen});
@@ -236,6 +233,11 @@ class App extends React.Component {
 			this.setState({workflowFormOpen: state});
 		}
 
+		toggleTaskForm(state) {
+
+			this.setState({taskFormOpen: state})
+		}
+
 		toggleTaskPanel() {
 			this.setState({taskPanelOpen: !this.state.taskPanelOpen});
 		}
@@ -244,19 +246,12 @@ class App extends React.Component {
 			
 			this.setState({selectedWorkflow: workflow}, () => {
 				
-
-				if(!workflow.DIAGRAM) {
-
-					this.createModel(workflow);
-				}
-
 				this.engine.setModel(workflow.DIAGRAM)
 				this.layoutEngine.redistribute(workflow.DIAGRAM);
+				workflow.DIAGRAM.setZoomLevel(200)
 				this.engine.repaintCanvas();
 
 			});
-
-
 		}
 
 		taskSelected(event, task) {
@@ -273,24 +268,111 @@ class App extends React.Component {
 			node.setSelected()
 		}
 
+		async onUpload(e) {
+
+			e.preventDefault()
+			const reader = new FileReader()
+			reader.onload = async (e) => { 
+			  	const text = (e.target.result)
+				
+				var json = JSON.parse(text)
+
+				var workflows = json.workflows;
+
+				console.log(workflows)
+
+				for(var i in workflows) {
+
+					var newModel = new DiagramModel();
+					//newModel.deserializeModel(workflowsp[i].DIAGRAM, this.engine);
+
+					if(workflows[i].DIAGRAM) {
+
+						newModel.deserializeModel(workflows[i].DIAGRAM, this.engine);
+					}
+
+					workflows[i].DIAGRAM = newModel;
+				}
+
+				this.setState({workflows: [...workflows]}, ()=> {
+					this.engine.repaintCanvas();
+				});
+				
+			};
+			reader.readAsText(e.target.files[0])
+
+		}
+
+		onDownload() {
+
+			var blob = {
+				workflows: []
+			}
+
+			for (var i in this.state.workflows) {
+
+				var tasks = []
+
+				for(var j in this.state.workflows[i].TASKS) {
+
+					tasks.push(
+						
+						{
+
+							NAME: this.state.workflows[i].TASKS[j].NAME,
+							ACTIONS: this.state.workflows[i].TASKS[j].ACTIONS,
+							PARENTS: this.state.workflows[i].TASKS[j].PARENTS
+						}
+					)
+
+				}
+
+				blob.workflows.push(
+
+					{
+						TASKS: tasks,
+						NAME: this.state.workflows[i].NAME,
+						DESCRIPTION: this.state.workflows[i].DESCRIPTION
+					}
+				);
+				
+				if(this.state.workflows[i].DIAGRAM) {
+
+
+					blob.workflows[i].DIAGRAM = this.state.workflows[i].DIAGRAM.serialize()
+				}
+			}
+
+			const fileBlob = new Blob([JSON.stringify(blob, null, 2)], {type : 'application/json'});
+
+			saveFile(fileBlob)
+		}
+
 
 		render() {
-
 
 			return <Wrapper>
 
 				<WorkflowForm 
                         workflows={this.state.workflows}
                         open={this.state.workflowFormOpen} 
-                        onConnect={(data)=> { this.toggleWorkflowForm(false); this.addWorkflow(data)}}
                         onClose={() => this.toggleWorkflowForm(false)}
 						onAdd={(data) => this.addWorkflow(data)}
-        />
+        		/>
+
+				<TaskForm 
+                        tasks={(this.state.selectedWorkflow) ? this.state.selectedWorkflow.TASKS : null }
+                        open={this.state.taskFormOpen} 
+                        onClose={() => this.toggleTaskForm(false)}
+						onAdd={(data) => this.addTask(data)}
+        		/>
 
 				<Header	
 				
 					onToggleWorkflowPanel={this.toggleWorkflowPanel.bind(this)} 
 					onToggleTaskPanel={this.toggleTaskPanel.bind(this)}
+					onDownload={this.onDownload.bind(this)}
+					onUpload={this.onUpload.bind(this)}
 
 
 				></Header>
@@ -315,6 +397,7 @@ class App extends React.Component {
 											selectedWorkflow={this.state.selectedWorkflow} 
 											selectedTask={this.state.selectedTask}
 											onAddTask={() => this.toggleTaskForm(true)}
+											onAddAction={() => this.onAddAction()}
 							/> 
 
 					</TaskPanelWrapper>

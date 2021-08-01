@@ -10,6 +10,7 @@
     "@projectstorm/react-diagrams": "^6.6.0",
     "closest": "^0.0.1",
     "dagre": "^0.8.5",
+    "flatted": "^3.2.2",
     "install": "^0.13.0",
     "lodash": "^4.17.21",
     "npm": "^7.20.3",

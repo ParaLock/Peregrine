@@ -34,6 +34,7 @@ const ListWrapper = styled.div`
     border: 1px solid #ccc;
 	width: 400px;
     margin-right: 3px;
+    
     background-color: white;
 `;
 
@@ -49,10 +50,20 @@ class TaskPanel extends React.Component {
     constructor() {
         super();
 
+        this.state = {
+
+        }
+
     }
 
     shouldComponentUpdate() {
         return true;
+    }
+
+    toggle(event, name, task) {
+        this.setState({['show' + name]: !this.state['show'+name]}, () => {
+            this.props.taskSelected(event, task)
+        });
     }
 
     render() {
@@ -76,13 +87,44 @@ class TaskPanel extends React.Component {
 
                                 { this.props.selectedWorkflow && this.props.selectedWorkflow.TASKS.map((task, index)=> {
 
-                                        return <StyledListItem
-                                            button
+                                        return <span style={{marginLeft: '0px', paddingLeft: '0px'}}>
+                                        <StyledListItem 
+                                            button 
                                             selected={(this.props.selectedTask) ? this.props.selectedTask.NAME === task.NAME : false}
-                                            onClick={(event) => this.props.taskSelected(event, task)}
+                                            onClick={(event) => {this.toggle(event, task.NAME, task)}}
                                         >
-                                            <ListItemText primary={(index + 1) + ")" + task.NAME} secondary={task.DESCRIPTION} />
+        
+                                            <ListItemText primary={task.NAME} secondary={task.DESCRIPTION}  />
+                                            {this.state["show" + task.NAME] ? <ExpandLess /> : <ExpandMore />}
                                         </StyledListItem>
+                                        <Collapse in={this.state["show" + task.NAME]} timeout="auto" unmountOnExit>
+                                            <List component="div" disablePadding>
+                                            
+                                                {
+                                                    task.ACTIONS.map((action) => {
+
+                                                        return <ListItem 
+                                                                        button 
+                                                                        style={{marginLeft: '20px'}}
+                                                                        onClick={() => this.props.onActionSelected(action)} 
+                                                                >
+                                                                    <ListItemText primary={action.NAME} />
+                                                                </ListItem>
+                                                    })
+                                                }
+
+                                                <Button 
+                                                        fullWidth={false}  
+                                                        variant="outlined" 
+                                                        color="primary"
+                                                        onClick={() => {this.props.onAddAction(task.NAME) } }
+                                                >
+                                                Add Action
+                                                </Button>
+
+                                            </List>
+                                        </Collapse>
+                                        </span>
 
                                     })
                                 }
