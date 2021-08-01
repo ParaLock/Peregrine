@@ -13,7 +13,11 @@ import InitialWorkflows from './workflow_list.json'
 import createEngine, { 
 	DefaultLinkModel, 
 	DefaultNodeModel,
-	DiagramModel 
+	DiagramModel,
+	NodeModel,
+	DagreEngine,
+	DiagramEngine,
+	PathFindingLinkFactory
 } from '@projectstorm/react-diagrams';
 
 import {CanvasWidget } from '@projectstorm/react-canvas-core';
@@ -83,23 +87,16 @@ class App extends React.Component {
 				super(props)
 
 				this.engine = createEngine();
-				// const node1 = new DefaultNodeModel({
-				// 	name: 'Node 1',
-				// 	color: 'rgb(0,192,255)',
-				// });
-				// node1.setPosition(100, 100);
-				// let port1 = node1.addOutPort('Out');
 
-				// const node2 = new DefaultNodeModel({
-				// 	name: 'Node 1',
-				// 	color: 'rgb(0,192,255)',
-				// });
-				// node2.setPosition(100, 100);
-				// let port2 = node2.addOutPort('Out');
-
-				//const link = port1.link<DefaultLinkModel>(port2);
-
-
+				this.layoutEngine = new DagreEngine({
+					graph: {
+						rankdir: 'LR',
+						ranker: 'longest-path',
+						marginx: 25,
+						marginy: 25
+					},
+					includeLinks: false
+				});
 				this.model = new DiagramModel();
 				// model.addAll(node1, node2, link);
 				this.engine.setModel(this.model);
@@ -115,6 +112,31 @@ class App extends React.Component {
 
 		}
 
+		handleNodeSelect(evt) {
+			
+			if(evt.isSelected) {
+
+				var task = this.state.selectedWorkflow.TASKS.filter((item) => item.NAME == evt.entity.options.name);
+	
+				console.log(task[0]);
+
+				this.setState({selectedTask: task[0]});
+			} else {
+				this.setState({selectedTask: null});
+			}
+
+		}
+
+		handleNodeEvent(evt) {
+
+			console.log("Node event: ")
+			console.log(evt)
+
+			if(evt.function == "selectionChanged") {
+				this.handleNodeSelect(evt);
+			}
+		}
+
 		generateNode(taskName, task, tasks, visitedList, previous, model) {
 
 
@@ -125,7 +147,13 @@ class App extends React.Component {
 					color: 'rgb(0,192,255)',
 				});
 	
-				node.setPosition(100, 100);
+				node.registerListener({
+					eventDidFire: (evt) => {
+						this.handleNodeEvent(evt)
+					}	
+				});
+
+				node.setPosition(1000, 500);
 
 				visitedList[taskName] = true;
 
@@ -213,7 +241,7 @@ class App extends React.Component {
 		}
 
 		workflowSelected(event, workflow) {
-
+			
 			this.setState({selectedWorkflow: workflow}, () => {
 				
 
@@ -222,9 +250,9 @@ class App extends React.Component {
 					this.createModel(workflow);
 				}
 
-
 				this.engine.setModel(workflow.DIAGRAM)
-				this.forceUpdate()
+				this.layoutEngine.redistribute(workflow.DIAGRAM);
+				this.engine.repaintCanvas();
 
 			});
 
@@ -232,8 +260,19 @@ class App extends React.Component {
 		}
 
 		taskSelected(event, task) {
+		
 			this.setState({selectedTask: task});
+			
+			var prevSelected = Object.values(this.state.selectedWorkflow.DIAGRAM.activeNodeLayer.models).filter((item) => item.options.selected == true);
+			var node = Object.values(this.state.selectedWorkflow.DIAGRAM.activeNodeLayer.models).filter((item) => item.options.name == task.NAME)[0];
+
+			for(var i in prevSelected) {
+				prevSelected[i].setSelected(false)
+			}
+
+			node.setSelected()
 		}
+
 
 		render() {
 

@@ -57,7 +57,7 @@ class TaskPanel extends React.Component {
 
     render() {
 
-        console.log(this.props.selectedWorkflow)
+        console.log(this.props.selectedTask)
         return (
 
             <Wrapper>
