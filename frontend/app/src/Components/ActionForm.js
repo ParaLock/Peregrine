@@ -48,7 +48,7 @@ const StyledDialogTitle = withStyles(styles)((props) => {
   });
 
 const Wrapper = styled.div`
-  width: 400px;
+  width: 600px;
 `;
 
 class ActionForm extends React.Component {
@@ -83,9 +83,9 @@ class ActionForm extends React.Component {
 
                     var isValid = true;
 
-                    for(var i in this.props.tasks) {
+                    for(var i in this.props.actions) {
 
-                        if(this.state.data["name"] == this.props.tasks[i].NAME) {
+                        if(this.state.data["name"] == this.props.actions[i].NAME) {
                             isValid = false;
                         }
                     }
@@ -98,7 +98,7 @@ class ActionForm extends React.Component {
                     return false;
 
                 }, 
-                msg: "Task name already in use.", 
+                msg: "Action name already in use.", 
                 target: "name"
             }
         ]
@@ -165,18 +165,23 @@ class ActionForm extends React.Component {
 
     render() {
 
-        return <Dialog onClose={() => this.props.onClose()} aria-labelledby="customized-dialog-title" open={this.props.open}>
+        return <Dialog onClose={() => this.props.onClose()} maxWidth={"xl"} aria-labelledby="customized-dialog-title" open={this.props.open}>
                     <StyledDialogTitle id="customized-dialog-title" onClose={() => this.props.onClose()}>
                         Action Form
                     </StyledDialogTitle>
                     <DialogContent dividers>
+                        <form>
+
+
+                        </form>
                         <Wrapper>
 
-                            <FormControl >
+                            <FormControl>
+
                                 <InputLabel >Type</InputLabel>
                                 <Select
 
-                                    style = {{width: 100, marginRight: 10}}
+                                    style = {{width: 150, marginRight: 10}}
                                     variant={"outlined"}
                                     helperText={this.state.errors["type"]}
                                     onChange={(evt) => this.handleChange(evt.target.value, "type")}
@@ -189,22 +194,39 @@ class ActionForm extends React.Component {
                                 </Select>
  
                             </FormControl>
+
                             <FormControl >
-                            <TextField
-                                fullWidth={true}
-                                style = {{width: 200}}
-                                label="Name"
-                                variant="outlined"
-                                size="medium"
-                                helperText={this.state.errors["name"]}
-                                onChange={(evt) => this.handleChange(evt.target.value, "name")}
-                                value={this.state.data["name"] ?? ""}
-                                error={this.state.errors["name"].length > 0}
-                            />
+                                <TextField
+                                    fullWidth={true}
+                                    style = {{width: 400}}
+                                    label="Name"
+                                    variant="outlined"
+                                    size="medium"
+                                    helperText={this.state.errors["name"]}
+                                    onChange={(evt) => this.handleChange(evt.target.value, "name")}
+                                    value={this.state.data["name"] ?? ""}
+                                    error={this.state.errors["name"].length > 0}
+                                />
 
                             </FormControl>
            
 
+                            {   this.state.data["type"] == "BASH" && 
+
+                                <FormControl ><div>test</div></FormControl>
+
+                            }
+
+                            {   this.state.data["type"] == "API" &&
+
+                                <FormControl><div>Work In Progress</div></FormControl>
+
+                            }
+
+                            {   this.state.data["type"] == "WebView" &&
+                                
+                                <FormControl><div>Work In Progress</div></FormControl>
+                            }   
 
         
 

@@ -8,9 +8,12 @@ import AssignmentIcon from '@material-ui/icons/Assignment';
 import Box from '@material-ui/core/Box';
 import SaveAltIcon from '@material-ui/icons/SaveAlt';
 import PublishIcon from '@material-ui/icons/Publish';
-
+import MessageIcon from '@material-ui/icons/Message';
+import BarChartIcon from '@material-ui/icons/BarChart';
 
 export default class Header extends React.Component {
+
+    static HEIGHT = 50
 
     constructor(props) {
 
@@ -59,8 +62,16 @@ export default class Header extends React.Component {
                       style={{display: 'none'}}
                       onChange={this.props.onUpload.bind(this)}
                     />
-
                     </Box>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={this.props.onToggleLog.bind(this)}
+                        edge="start"
+            
+                      >
+                      <BarChartIcon />
+                    </IconButton>
                       <IconButton
                         color="inherit"
                         aria-label="open drawer"

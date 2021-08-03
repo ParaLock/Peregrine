@@ -1,18 +1,17 @@
-#Credit: https://www.pluralsight.com/guides/using-react.js-with-docker
 
-# pull the base image
 FROM node:alpine
 
-# set the working direction
 WORKDIR /app
 
-# add `/app/node_modules/.bin` to $PATH
+COPY ./app/package.json /app/
+COPY ./app/package-lock.json /app/
+
+RUN npm install --legacy-peer-deps
+
+RUN chmod -R 777 /app
+RUN chmod -R 777 /app/node_modules/
+RUN chmod -R +x /app/node_modules/.bin/*
+
 ENV PATH /app/node_modules/.bin:$PATH
 
-# install app dependencies
-COPY app/package.json ./
-
-#RUN npm install
-
-# start app
 CMD ["npm", "start"]

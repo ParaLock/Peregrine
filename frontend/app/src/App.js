@@ -9,6 +9,10 @@ import WorkflowForm from './Components/WorkflowForm'
 import TaskForm from './Components/TaskForm'
 import TaskPanel from './Components/TaskPanel'
 import ActionForm from './Components/ActionForm'
+import Drawer from '@material-ui/core/Drawer';
+import LogViewer from './Components/LogViewer';
+import Log from './Components/Log';
+
 
 import _ from 'lodash'
 
@@ -22,7 +26,7 @@ import createEngine, {
 	PathFindingLinkFactory
 } from '@projectstorm/react-diagrams';
 
-import {CanvasWidget } from '@projectstorm/react-canvas-core';
+import {CanvasWidget, DeleteItemsAction } from '@projectstorm/react-canvas-core';
 
 
 const Wrapper = styled.div`
@@ -36,7 +40,7 @@ const Wrapper = styled.div`
 const Columns = styled.div `
 
 	width: 100%;
-	height: calc(100% - 50px);
+	height: calc(100% - ${Header.HEIGHT + "px"});
 	display: flex;
 
 	overflow:hidden;
@@ -50,12 +54,13 @@ const WorkflowPanelWrapper = styled.div`
     width: 400px;
 		
 	transform: ${props => props.open ? "translateX(0%)" : "translateX(-100%)"};
-	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms;
+	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms, max-height 250ms ease-in;
 
 	opacity: ${props => props.open ? "1" : "0"};
 
 	z-index: 1000;
-    height: calc(100% - 50px);
+	height: 100%;
+    max-height:  ${props => props.logOpen ? "calc(100% - " + (Header.HEIGHT + Log.HEIGHT) + "px)" : "calc(100% - " + Header.HEIGHT + "px)"};
 
 	pointer-events:none;
 `;
@@ -68,25 +73,11 @@ const TaskPanelWrapper = styled.div`
 	right: 0;
 	max-width: ${props => props.open ? "100%" : "0%"};
 	transform: ${props => props.open ? "translateX(0%)" : "translateX(100%)"};
-	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms;
+	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms, max-height 250ms ease-in;
 	opacity: ${props => props.open ? "1" : "0"};
 	z-index: 1000;
-	height: calc(100% - 50px);
-	pointer-events:none;
-`;
-
-const ActionPanelWrapper = styled.div`
-	
-	display: flex;
-	position: absolute;
-	overflow:hidden;
-	right: 0;
-	max-width: ${props => props.open ? "100%" : "0%"};
-	transform: ${props => props.open ? "translateX(-400px)" : "translateX(100%)"};
-	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms;
-	opacity: ${props => props.open ? "1" : "0"};
-	z-index: 1000;
-	height: calc(100% - 50px);
+	height: 100%;
+    max-height:  ${props => props.logOpen ? "calc(100% - " + (Header.HEIGHT + Log.HEIGHT) + "px)" : "calc(100% - " + Header.HEIGHT + "px)"};
 	pointer-events:none;
 `;
 
@@ -118,34 +109,39 @@ function removeIf(array, callback) {
 class App extends React.Component {
 
 		constructor(props) {
-				super(props)
+			super(props)
 
-				this.engine = createEngine();
+			this.engine = createEngine({ registerDefaultDeleteItemsAction: false });
+			this.engine.getActionEventBus().registerAction(new DeleteItemsAction({ keyCodes: [46] }));
 
-				this.layoutEngine = new DagreEngine({
-					graph: {
-						rankdir: 'LR',
-						ranker: 'longest-path',
-						marginx: 25,
-						marginy: 25
-					},
-					includeLinks: false
-				});
-				this.model = new DiagramModel();
-				// model.addAll(node1, node2, link);
-				this.engine.setModel(this.model);
+			this.layoutEngine = new DagreEngine({
+				graph: {
+					rankdir: 'LR',
+					ranker: 'longest-path',
+					marginx: 25,
+					marginy: 25
+				},
+				includeLinks: false
+			});
+			this.model = new DiagramModel();
+			// model.addAll(node1, node2, link);
+			this.engine.setModel(this.model);
 
-				this.state = {
-					workflowPanelOpen: false,
-					taskPanelOpen: false,
-					taskFormOpen: false,
-					actionFormOpen: false,
-					actionPanelOpen: false,
-					selectedTask: null,
-					selectedWorkflow: null,
-					workflows: [],
-					workflowFormOpen: false
-				}
+			this.state = {
+				logPanelOpen: false,
+				workflowPanelOpen: false,
+				taskPanelOpen: false,
+				taskFormOpen: false,
+				actionFormOpen: false,
+				actionPanelOpen: false,
+				selectedTask: null,
+				selectedWorkflow: null,
+				workflows: [],
+				workflowFormOpen: false
+			}
+
+
+			
 
 		}
 
@@ -189,7 +185,9 @@ class App extends React.Component {
 				this.handleNodeSelect(evt);
 			}
 
+			//Aweful hack needed here because for some reason this event fires randomly when typing in form.
 			if(evt.function == "entityRemoved") {
+
 				this.removeTask(evt.entity.options.name)
 			}
 		}
@@ -241,7 +239,7 @@ class App extends React.Component {
 				node.registerListener({
 					eventDidFire: (evt) => {
 						this.handleNodeEvent(evt)
-					}	
+					}
 				});
 
 				var input = node.addInPort('IN');
@@ -280,6 +278,10 @@ class App extends React.Component {
 
 		toggleTaskPanel() {
 			this.setState({taskPanelOpen: !this.state.taskPanelOpen});
+		}
+
+		toggleLogPanel() {
+			this.setState({logPanelOpen: !this.state.logPanelOpen});
 		}
 
 		workflowSelected(event, workflow) {
@@ -361,7 +363,7 @@ class App extends React.Component {
 
 					_.forEach(nodes, node => {
 					  node.registerListener({
-						eventDidFire: e => this.handleNodeEvent(e)
+						eventDidFire: e => this.handleNodeEvent(e)	
 					  });
 					});
 
@@ -451,15 +453,17 @@ class App extends React.Component {
 				
 					onToggleWorkflowPanel={this.toggleWorkflowPanel.bind(this)} 
 					onToggleTaskPanel={this.toggleTaskPanel.bind(this)}
+					onToggleLog={this.toggleLogPanel.bind(this)}
 					onDownload={this.onDownload.bind(this)}
 					onUpload={this.onUpload.bind(this)}
 
 
+
 				></Header>
 
-				<Columns>
+				<Columns logOpen={this.state.logPanelOpen}>
 
-					<WorkflowPanelWrapper open={this.state.workflowPanelOpen}>
+					<WorkflowPanelWrapper open={this.state.workflowPanelOpen} logOpen={this.state.logPanelOpen}>
 							<WorkflowPanel 
 											open={this.state.workflowPanelOpen}  
 											workflowSelected={this.workflowSelected.bind(this)} 
@@ -469,7 +473,7 @@ class App extends React.Component {
 							/> 
 					</WorkflowPanelWrapper>
 
-					<TaskPanelWrapper open={this.state.taskPanelOpen}>
+					<TaskPanelWrapper open={this.state.taskPanelOpen} logOpen={this.state.logPanelOpen}>
 
 							<TaskPanel 
 											open={this.state.taskPanelOpen}  
@@ -485,6 +489,12 @@ class App extends React.Component {
 					<CanvasWidget className="graphContainer" engine={this.engine} />
 
 				</Columns>
+
+				<React.Fragment key={"bottom"}>
+					<Drawer variant={"persistent"} anchor={"bottom"} open={this.state.logPanelOpen}>
+						<Log entries={["test1", "test2", "asdasdd", "adaiusdhasiud"]} />
+					</Drawer>
+				</React.Fragment>
 
 			</Wrapper>
 		}
