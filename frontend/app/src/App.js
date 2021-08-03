@@ -86,7 +86,7 @@ const saveFile = async (blob) => {
 
 	var d = new Date().toISOString().split('T')[0]
 
-	a.download = "beaver-session-" + d  + '.json';
+	a.download = "pelegrin-session-" + d  + '.json';
 	a.href = URL.createObjectURL(blob);
 	a.addEventListener('click', (e) => {
 	  setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
@@ -309,6 +309,14 @@ class App extends React.Component {
 		}
 
 		addAction(data) {
+
+			// var newAction = {
+			// 	NAME: data.name,
+			// 	TYPE: data.type,
+			// 	DETAILS: {
+
+			// 	}
+			// }
 
 		}
 

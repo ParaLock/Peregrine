@@ -1,0 +1,405 @@
+{
+  "workflows": [
+    {
+      "TASKS": [
+        {
+          "NAME": "Create JIRA Ticket",
+          "ACTIONS": [],
+          "PARENTS": []
+        },
+        {
+          "NAME": "Branch From Stabilization",
+          "ACTIONS": [],
+          "PARENTS": []
+        },
+        {
+          "NAME": "Create PR",
+          "ACTIONS": [],
+          "PARENTS": []
+        }
+      ],
+      "NAME": "Rabbit Stabilization Release",
+      "DESCRIPTION": "This workflow handles the deployment of a new Rabbit stabilization release!",
+      "DIAGRAM": {
+        "id": "5ac1bbeb-f130-4c15-a6c5-c4be7fc63095",
+        "offsetX": 703,
+        "offsetY": 193,
+        "zoom": 200,
+        "gridSize": 0,
+        "layers": [
+          {
+            "id": "f63f24c0-2dc3-4354-9ba6-7febd74178bb",
+            "type": "diagram-links",
+            "isSvg": true,
+            "transformed": true,
+            "models": {
+              "382651b2-b26c-45e3-872e-ad96882e0da7": {
+                "id": "382651b2-b26c-45e3-872e-ad96882e0da7",
+                "type": "default",
+                "selected": false,
+                "source": "ffb03a63-643c-49ed-83eb-beae027c11a8",
+                "sourcePort": "7c64074e-e93f-4ec2-b5f0-81cf04ea93a2",
+                "target": "b9232dce-ea1a-4190-a891-fe6e79c897a8",
+                "targetPort": "069c29fc-4a1b-41b3-b060-e059c7d1dae3",
+                "points": [
+                  {
+                    "id": "a9b703a1-d139-4e48-999a-63e4cefeccde",
+                    "type": "point",
+                    "x": 159.203125,
+                    "y": 60.5
+                  },
+                  {
+                    "id": "779f3972-9a6f-4065-a96d-51619057e38d",
+                    "type": "point",
+                    "x": 298.5,
+                    "y": 112
+                  }
+                ],
+                "labels": [],
+                "width": 3,
+                "color": "gray",
+                "curvyness": 50,
+                "selectedColor": "rgb(0,192,255)"
+              },
+              "81599d8d-8bcd-457a-8f3d-0d846de45c23": {
+                "id": "81599d8d-8bcd-457a-8f3d-0d846de45c23",
+                "type": "default",
+                "selected": false,
+                "source": "39ffe98e-9d54-4788-9cc9-412b6a106f4f",
+                "sourcePort": "38f178b9-b9d5-418b-9262-da291e28ce43",
+                "target": "b9232dce-ea1a-4190-a891-fe6e79c897a8",
+                "targetPort": "069c29fc-4a1b-41b3-b060-e059c7d1dae3",
+                "points": [
+                  {
+                    "id": "ac6a814a-9d74-4427-be62-51866d31d27c",
+                    "type": "point",
+                    "x": 149.796875,
+                    "y": 173.5
+                  },
+                  {
+                    "id": "0d667ae9-2a47-4ec7-b263-fe8c40869744",
+                    "type": "point",
+                    "x": 298.5,
+                    "y": 112
+                  }
+                ],
+                "labels": [],
+                "width": 3,
+                "color": "gray",
+                "curvyness": 50,
+                "selectedColor": "rgb(0,192,255)"
+              }
+            }
+          },
+          {
+            "id": "fb3311fa-ce12-4af6-8674-e0a479dcdfde",
+            "type": "diagram-nodes",
+            "isSvg": false,
+            "transformed": true,
+            "models": {
+              "39ffe98e-9d54-4788-9cc9-412b6a106f4f": {
+                "id": "39ffe98e-9d54-4788-9cc9-412b6a106f4f",
+                "type": "default",
+                "selected": true,
+                "x": 51.5,
+                "y": 138,
+                "ports": [
+                  {
+                    "id": "af1cd584-3ec0-40e9-9180-3d7eed3c7192",
+                    "type": "default",
+                    "x": 53.5,
+                    "y": 166,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "39ffe98e-9d54-4788-9cc9-412b6a106f4f",
+                    "links": [],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "38f178b9-b9d5-418b-9262-da291e28ce43",
+                    "type": "default",
+                    "x": 142.296875,
+                    "y": 166,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "39ffe98e-9d54-4788-9cc9-412b6a106f4f",
+                    "links": [
+                      "81599d8d-8bcd-457a-8f3d-0d846de45c23"
+                    ],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Create JIRA Ticket",
+                "color": "rgb(0,192,255)",
+                "portsInOrder": [
+                  "af1cd584-3ec0-40e9-9180-3d7eed3c7192"
+                ],
+                "portsOutOrder": [
+                  "38f178b9-b9d5-418b-9262-da291e28ce43"
+                ]
+              },
+              "ffb03a63-643c-49ed-83eb-beae027c11a8": {
+                "id": "ffb03a63-643c-49ed-83eb-beae027c11a8",
+                "type": "default",
+                "selected": false,
+                "x": 25,
+                "y": 25,
+                "ports": [
+                  {
+                    "id": "f95de7ba-0f8a-4415-a48a-0b54c8d8ac6b",
+                    "type": "default",
+                    "x": 27,
+                    "y": 53,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "ffb03a63-643c-49ed-83eb-beae027c11a8",
+                    "links": [],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "7c64074e-e93f-4ec2-b5f0-81cf04ea93a2",
+                    "type": "default",
+                    "x": 151.703125,
+                    "y": 53,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "ffb03a63-643c-49ed-83eb-beae027c11a8",
+                    "links": [
+                      "382651b2-b26c-45e3-872e-ad96882e0da7"
+                    ],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Branch From Stabilization",
+                "color": "rgb(0,192,255)",
+                "portsInOrder": [
+                  "f95de7ba-0f8a-4415-a48a-0b54c8d8ac6b"
+                ],
+                "portsOutOrder": [
+                  "7c64074e-e93f-4ec2-b5f0-81cf04ea93a2"
+                ]
+              },
+              "b9232dce-ea1a-4190-a891-fe6e79c897a8": {
+                "id": "b9232dce-ea1a-4190-a891-fe6e79c897a8",
+                "type": "default",
+                "selected": false,
+                "x": 289,
+                "y": 76.5,
+                "ports": [
+                  {
+                    "id": "069c29fc-4a1b-41b3-b060-e059c7d1dae3",
+                    "type": "default",
+                    "x": 291,
+                    "y": 104.5,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "b9232dce-ea1a-4190-a891-fe6e79c897a8",
+                    "links": [
+                      "382651b2-b26c-45e3-872e-ad96882e0da7",
+                      "81599d8d-8bcd-457a-8f3d-0d846de45c23"
+                    ],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "ac8d88b2-7ff7-4094-9278-26646bcf1d8b",
+                    "type": "default",
+                    "x": 370.984375,
+                    "y": 104.5,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "b9232dce-ea1a-4190-a891-fe6e79c897a8",
+                    "links": [],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Create PR",
+                "color": "rgb(0,192,255)",
+                "portsInOrder": [
+                  "069c29fc-4a1b-41b3-b060-e059c7d1dae3"
+                ],
+                "portsOutOrder": [
+                  "ac8d88b2-7ff7-4094-9278-26646bcf1d8b"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "TASKS": [
+        {
+          "NAME": "Duplicate CI Gate Files",
+          "ACTIONS": [
+            {
+              "NAME": "test1"
+            },
+            {
+              "NAME": "test2"
+            }
+          ],
+          "PARENTS": []
+        },
+        {
+          "NAME": "Rename Duplicates to RTL",
+          "ACTIONS": [
+            {
+              "NAME": "test1"
+            },
+            {
+              "NAME": "test2"
+            }
+          ],
+          "PARENTS": []
+        }
+      ],
+      "NAME": "Release New RTL Test Suites",
+      "DESCRIPTION": "This workflow generates new test suites for an RTL release.",
+      "DIAGRAM": {
+        "id": "d115039d-6402-4388-adb8-a470ea82c3ba",
+        "offsetX": 947,
+        "offsetY": 415,
+        "zoom": 200,
+        "gridSize": 0,
+        "layers": [
+          {
+            "id": "d8ad30bb-9d39-4fc1-86b1-8954d3110aa3",
+            "type": "diagram-links",
+            "isSvg": true,
+            "transformed": true,
+            "models": {
+              "433e260c-8130-48b8-a805-37c2a7272e09": {
+                "id": "433e260c-8130-48b8-a805-37c2a7272e09",
+                "type": "default",
+                "selected": false,
+                "source": "4c0c6f10-79f2-475c-a5f5-9ef7b65b46d1",
+                "sourcePort": "6cc4f313-3e1e-4a67-8c47-9491ac19ca43",
+                "target": "a2c3760e-fb71-484e-a3da-8e09c672b685",
+                "targetPort": "36aae240-9ba2-47d8-9b4a-33688864a789",
+                "points": [
+                  {
+                    "id": "48c51217-8689-41c8-8680-61999aafa3f6",
+                    "type": "point",
+                    "x": 20.078125,
+                    "y": 28
+                  },
+                  {
+                    "id": "309d0316-3afe-4efe-a03a-99ab6b1d71a9",
+                    "type": "point",
+                    "x": 208.5,
+                    "y": 26
+                  }
+                ],
+                "labels": [],
+                "width": 3,
+                "color": "gray",
+                "curvyness": 50,
+                "selectedColor": "rgb(0,192,255)"
+              }
+            }
+          },
+          {
+            "id": "405241a3-51bb-4c1a-aeaa-34eac278914a",
+            "type": "diagram-nodes",
+            "isSvg": false,
+            "transformed": true,
+            "models": {
+              "4c0c6f10-79f2-475c-a5f5-9ef7b65b46d1": {
+                "id": "4c0c6f10-79f2-475c-a5f5-9ef7b65b46d1",
+                "type": "default",
+                "selected": false,
+                "x": -101,
+                "y": -7.5,
+                "ports": [
+                  {
+                    "id": "0b91e0df-2ebd-4f64-9a38-fa7c4e3ce6ff",
+                    "type": "default",
+                    "x": -99,
+                    "y": 20.5,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "4c0c6f10-79f2-475c-a5f5-9ef7b65b46d1",
+                    "links": [],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "6cc4f313-3e1e-4a67-8c47-9491ac19ca43",
+                    "type": "default",
+                    "x": 12.578125,
+                    "y": 20.5,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "4c0c6f10-79f2-475c-a5f5-9ef7b65b46d1",
+                    "links": [
+                      "433e260c-8130-48b8-a805-37c2a7272e09"
+                    ],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Duplicate CI Gate Files",
+                "color": "rgb(0,192,255)",
+                "portsInOrder": [
+                  "0b91e0df-2ebd-4f64-9a38-fa7c4e3ce6ff"
+                ],
+                "portsOutOrder": [
+                  "6cc4f313-3e1e-4a67-8c47-9491ac19ca43"
+                ]
+              },
+              "a2c3760e-fb71-484e-a3da-8e09c672b685": {
+                "id": "a2c3760e-fb71-484e-a3da-8e09c672b685",
+                "type": "default",
+                "selected": false,
+                "x": 199,
+                "y": -9.5,
+                "ports": [
+                  {
+                    "id": "36aae240-9ba2-47d8-9b4a-33688864a789",
+                    "type": "default",
+                    "x": 201,
+                    "y": 18.5,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "a2c3760e-fb71-484e-a3da-8e09c672b685",
+                    "links": [
+                      "433e260c-8130-48b8-a805-37c2a7272e09"
+                    ],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "d728e399-94ae-446a-a659-644a51f275c9",
+                    "type": "default",
+                    "x": 331.484375,
+                    "y": 18.5,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "a2c3760e-fb71-484e-a3da-8e09c672b685",
+                    "links": [],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Rename Duplicates to RTL",
+                "color": "rgb(0,192,255)",
+                "portsInOrder": [
+                  "36aae240-9ba2-47d8-9b4a-33688864a789"
+                ],
+                "portsOutOrder": [
+                  "d728e399-94ae-446a-a659-644a51f275c9"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

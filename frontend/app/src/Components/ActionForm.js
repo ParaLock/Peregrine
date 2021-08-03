@@ -58,8 +58,8 @@ class ActionForm extends React.Component {
         super();
 
         this.state = {
-            errors: {name: "", type: ""},
-            data: {name: "", type: ""},
+            errors: {name: "", type: "", bash_cmd: ""},
+            data: {name: "", type: "", bash_cmd: ""},
             isInputValid: true
         }
 
@@ -120,7 +120,7 @@ class ActionForm extends React.Component {
     validateInputs() {
         
         var isValid = true;
-        var errors = {name: "", type: ""};
+        var errors = {name: "", type: "", bash_cmd: ""};
      
         for(var i in this.validators) {
 
@@ -198,7 +198,7 @@ class ActionForm extends React.Component {
                             <FormControl >
                                 <TextField
                                     fullWidth={true}
-                                    style = {{width: 400}}
+                                    style = {{width: 350}}
                                     label="Name"
                                     variant="outlined"
                                     size="medium"
@@ -210,10 +210,38 @@ class ActionForm extends React.Component {
 
                             </FormControl>
            
+                            <br/>
+                            <br/>
+                            <br/>
 
                             {   this.state.data["type"] == "BASH" && 
+                                <FormControl >
+                                    {/* <TextField
+                                        fullWidth={true}
+                                        style = {{width: 400}}
+                                        label="Cmd"
+                                        variant="outlined"
+                                        size="medium"
+                                        helperText={this.state.errors["bash_cmd"]}
+                                        onChange={(evt) => this.handleChange(evt.target.value, "bash_cmd")}
+                                        value={this.state.data["bash_cmd"] ?? ""}
+                                        error={this.state.errors["bash_cmd"].length > 0}
+                                    /> */}
 
-                                <FormControl ><div>test</div></FormControl>
+                                    <TextField
+                                        fullWidth={true}
+                                        style = {{width: 510}}
+                                        label="Cmd"
+                                        variant="outlined"
+                                        size="medium"
+                                        multiline={true}
+                                        minRows={5}
+                                        helperText={this.state.errors["bash_cmd"]}
+                                        onChange={(evt) => this.handleChange(evt.target.value, "bash_cmd")}
+                                        value={this.state.data["bash_cmd"] ?? ""}
+                                        error={this.state.errors["bash_cmd"].length > 0}
+                                    />
+                                </FormControl>
 
                             }
 
