@@ -32,7 +32,7 @@ const StyledListItem = withStyles({
 const ListWrapper = styled.div`
     height: 100%;
     border: 1px solid #ccc;
-	width: 400px;
+	width: 250px;
     margin-right: 3px;
     
     background-color: white;
@@ -60,15 +60,14 @@ class TaskPanel extends React.Component {
         return true;
     }
 
-    toggle(event, name, task) {
+    taskSelected(event, name) {
         this.setState({['show' + name]: !this.state['show'+name]}, () => {
-            this.props.taskSelected(event, task)
+            this.props.taskSelected(event, name)
         });
     }
 
     render() {
 
-        console.log(this.props.selectedTask)
         return (
 
             <Wrapper>
@@ -90,23 +89,24 @@ class TaskPanel extends React.Component {
                                         return <span style={{marginLeft: '0px', paddingLeft: '0px'}}>
                                         <StyledListItem 
                                             button 
-                                            selected={(this.props.selectedTask) ? this.props.selectedTask.NAME === task.NAME : false}
-                                            onClick={(event) => {this.toggle(event, task.NAME, task)}}
+                                            selected={(this.props.selectedTask) ? this.props.selectedTask.ID === task.ID : false}
+                                            onClick={(event) => {this.taskSelected(this.props.selectedWorkflow.ID, task.ID)}}
                                         >
         
                                             <ListItemText primary={task.NAME} secondary={task.DESCRIPTION}  />
-                                            {this.state["show" + task.NAME] ? <ExpandLess /> : <ExpandMore />}
+                                            {this.state["show" + task.ID] ? <ExpandLess /> : <ExpandMore />}
                                         </StyledListItem>
-                                        <Collapse in={this.state["show" + task.NAME]} timeout="auto" unmountOnExit>
+                                        <Collapse in={this.state["show" + task.ID]} timeout="auto" unmountOnExit>
                                             <List component="div" disablePadding>
                                             
                                                 {
                                                     task.ACTIONS.map((action) => {
-
+                                                        console.log(this.props.selectedAction)
                                                         return <ListItem 
                                                                         button 
                                                                         style={{marginLeft: '20px'}}
-                                                                        onClick={() => this.props.onActionSelected(action)} 
+                                                                        selected={(this.props.selectedAction) ? this.props.selectedAction.ID === action.ID : false}
+                                                                        onClick={(event) => this.props.actionSelected(this.props.selectedWorkflow.ID, task.ID, action.ID)} 
                                                                 >
                                                                     <ListItemText primary={action.NAME} />
                                                                 </ListItem>
@@ -117,7 +117,7 @@ class TaskPanel extends React.Component {
                                                         fullWidth={false}  
                                                         variant="outlined" 
                                                         color="primary"
-                                                        onClick={() => {this.props.onAddAction(task.NAME) } }
+                                                        onClick={() => {this.props.onAddAction(task.ID) } }
                                                 >
                                                 Add Action
                                                 </Button>

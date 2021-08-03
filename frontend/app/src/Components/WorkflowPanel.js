@@ -31,7 +31,7 @@ const StyledListItem = withStyles({
 const ListWrapper = styled.div`
     height: 100%;
     border: 1px solid #ccc;
-    width: 100%;
+    width: 250px;
     margin-right: 3px;
     background-color: white;
 `;
@@ -75,8 +75,8 @@ class WorkflowPanel extends React.Component {
 
                                         return <StyledListItem
                                             button
-                                            selected={(this.props.selectedWorkflow) ? this.props.selectedWorkflow.NAME === workflow.NAME : false}
-                                            onClick={(event) => this.props.workflowSelected(event, workflow)}
+                                            selected={(this.props.selectedWorkflow) ? this.props.selectedWorkflow.ID === workflow.ID : false}
+                                            onClick={(event) => this.props.workflowSelected(workflow.ID)}
                                         >
                                             <ListItemText primary={workflow.NAME} secondary={workflow.DESCRIPTION} />
                                         </StyledListItem>
