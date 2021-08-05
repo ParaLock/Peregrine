@@ -8,6 +8,7 @@ export interface TaskNodeModelOptions extends BasePositionModelOptions {
 	name?: string;
 	color?: string;
     onExecute: any;
+    onReset: any;
 }
 
 export interface TaskNodeModelGenerics extends NodeModelGenerics {

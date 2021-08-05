@@ -7,6 +7,7 @@ import styled from '@emotion/styled';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 
 namespace S {
 	export const Node = styled.div<{ background: string; selected: boolean }>`
@@ -37,7 +38,7 @@ namespace S {
 		background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
 	`;
 
-	export const PortsContainer = styled.div`
+	export const InPortsContainer = styled.div`
 		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
@@ -46,6 +47,19 @@ namespace S {
 		}
 		&:only-child {
 			margin-right: 0px;
+		}
+	`;
+
+    export const OutPortsContainer = styled.div`
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+        align-items: flex-end;
+		&:first-of-type {
+			margin-left: 10px;
+		}
+		&:only-child {
+			margin-left: 0px;
 		}
 	`;
 }
@@ -81,7 +95,7 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
                 
                 <ButtonContainer>
 
-                <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
+                <S.InPortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.InPortsContainer>
                     <IconButton
                             size={"small"}
                             color="inherit"
@@ -91,8 +105,16 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
                         >
                         <PlayArrowIcon />
                     </IconButton>
-
-					<S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
+                    <IconButton
+                            size={"small"}
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge={false}
+                            onClick={() => this.props.node.getOptions().onReset()}
+                        >
+                        <RotateLeftIcon />
+                    </IconButton>
+					<S.OutPortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.OutPortsContainer>
                 </ButtonContainer>
 
 			</S.Node>

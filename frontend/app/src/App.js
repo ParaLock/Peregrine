@@ -283,11 +283,27 @@ class App extends React.Component {
 
 		}
 
+		onTaskReset(workflowId, taskId) {
+
+			var task = this.getTask(taskId, this.getWorkflow(workflowId));
+
+			task.STATE = "DORMENT";
+			task.ACTION_IDX = -1;
+
+			var node = this.getNode(taskId);
+
+			node.options.color = this.stateToColor("DORMENT");
+
+			this.engine.repaintCanvas();
+			this.forceUpdate();
+			
+		}
+
 		onTaskExecute(workflowId, taskId) {
 
 			var task = this.getTask(taskId, this.getWorkflow(workflowId));
 
-			if(task.STATE == "RUNNING") {
+			if(task.STATE !== "DORMENT") {
 
 				return;
 			}
@@ -378,6 +394,9 @@ class App extends React.Component {
 					color: 'rgb(0,192,255)',		
 					onExecute: () => {
 						this.onTaskExecute(this.state.selectedWorkflowId, id);
+					},
+					onReset: () => {
+						this.onTaskReset(this.state.selectedWorkflowId, id);
 					}
 				});
 
@@ -571,6 +590,7 @@ class App extends React.Component {
 				for(var i in workflows) {
 
 					var nodeExecFuncs = {}
+					var nodeResetFuncs = {}
 					var nodeColors = {}
 
 					var newModel = new DiagramModel();
@@ -599,7 +619,13 @@ class App extends React.Component {
 							return () => self.onTaskExecute(wId, tId);
 						} 
 
+						var t2 = function(wId, tId, self) {
+
+							return () => self.onTaskReset(wId, tId);
+						} 
+
 						nodeExecFuncs[task["ID"]] = t(workflows[i].ID, task.ID, this)
+						nodeResetFuncs[task["ID"]] = t2(workflows[i].ID, task.ID, this)
 
 						nodeColors[task.ID] = this.stateToColor(task.STATE);
 
@@ -620,10 +646,12 @@ class App extends React.Component {
 					_.forEach(nodes, node => {
 
 						node.options.onExecute = nodeExecFuncs[node.options.id];
+						node.options.onReset = nodeResetFuncs[node.options.id];
 
-						if(!node.options.onExecute) {
+						if(!node.options.onExecute || !node.options.onReset) {
 
 							node.options.onExecute = (workspaceId, taskId) => {}
+							node.options.onReset = (workspaceId, taskId) => {}
 						}
 
 						node.options.color = nodeColors[node.options.id];
