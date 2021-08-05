@@ -307,15 +307,19 @@ class App extends React.Component {
 
 				if(response.MSG.TYPE == "COMPLETION_STATUS") {
 					
+
+					
 					if(response.MSG.DETAIL.STATUS == "SUCCESS") {
 
 						var node = this.getNode(task.ID);
-						node.options.color = 'rgb(100, 167, 11)';
+						node.options.color = this.stateToColor("SUCCESS");
 
 					} else if (response.MSG.DETAIL.STATUS == "FAILED") {
 
 						var node = this.getNode(task.ID);
-						node.options.color = 'rgb(100, 0, 0)';
+						//node.options.color = 'rgb(100, 0, 0)';
+
+						node.options.color = this.stateToColor("FAILED");
 
 						task.STATE = response.MSG.DETAIL.STATUS;
 
@@ -535,6 +539,22 @@ class App extends React.Component {
 
 		}
 
+		stateToColor(state) {
+
+			var color = "rgb(0,192,255)";
+
+			if(state == "SUCCESS") {
+				color = 'rgb(100, 167, 11)';
+			}
+
+			if(state == "FAILED") {
+				color = 'rgb(100, 0, 0)';
+			}
+
+			return color;
+
+		}
+
 		async onUpload(e) {
 
 			e.preventDefault()
@@ -551,6 +571,7 @@ class App extends React.Component {
 				for(var i in workflows) {
 
 					var nodeExecFuncs = {}
+					var nodeColors = {}
 
 					var newModel = new DiagramModel();
 					//newModel.deserializeModel(workflowsp[i].DIAGRAM, this.engine);
@@ -573,21 +594,25 @@ class App extends React.Component {
 							task["ID"] = uuidv4();
 						}
 
+						var t = function(wId, tId, self) {
+
+							return () => self.onTaskExecute(wId, tId);
+						} 
+
+						nodeExecFuncs[task["ID"]] = t(workflows[i].ID, task.ID, this)
+
+						nodeColors[task.ID] = this.stateToColor(task.STATE);
+
 						for(var k in task.ACTIONS) {
 
 							if(!("ID" in task.ACTIONS[k])) {
 								task.ACTIONS[k].ID = uuidv4()
-							}
-
-							nodeExecFuncs[task["ID"]] = () => {
-								this.onTaskExecute(workflows[i].ID, task.ID);
 							}
 						}
 					}
 
 					workflows[i].DIAGRAM = newModel;
 
-					
 					const nodes = workflows[i].DIAGRAM.getNodes();
 					
 					//  console.log(nodes)
@@ -595,6 +620,13 @@ class App extends React.Component {
 					_.forEach(nodes, node => {
 
 						node.options.onExecute = nodeExecFuncs[node.options.id];
+
+						if(!node.options.onExecute) {
+
+							node.options.onExecute = (workspaceId, taskId) => {}
+						}
+
+						node.options.color = nodeColors[node.options.id];
 
 						node.registerListener({
 							eventDidFire: e => this.handleNodeEvent(e)	
@@ -638,7 +670,7 @@ class App extends React.Component {
 
 							NAME: this.state.workflows[i].TASKS[j].NAME,
 							ID: this.state.workflows[i].TASKS[j].ID,
-							ACTIONS: this.state.workflows[i].TASKS[j].ACTIONS,
+							ACTIONS: [...this.state.workflows[i].TASKS[j].ACTIONS],
 							ACTION_IDX: this.state.workflows[i].TASKS[j].ACTION_IDX,
 							STATE: this.state.workflows[i].TASKS[j].STATE
 							

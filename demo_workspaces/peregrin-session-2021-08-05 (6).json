@@ -1,0 +1,607 @@
+{
+  "workflows": [
+    {
+      "TASKS": [
+        {
+          "NAME": "Create JIRA Ticket",
+          "ID": "8c8ad7d1-8a58-4396-8b7d-0af21cc3af5b",
+          "ACTIONS": [],
+          "ACTION_IDX": -1,
+          "STATE": "DORMENT"
+        },
+        {
+          "NAME": "Branch From Stabilization",
+          "ID": "cf99d643-1c32-4a4e-b7d5-2d3a5d2934df",
+          "ACTIONS": [],
+          "ACTION_IDX": -1,
+          "STATE": "DORMENT"
+        },
+        {
+          "NAME": "Create PR",
+          "ID": "aae7ac99-f0e9-4db6-9f3e-d86ee78c8c83",
+          "ACTIONS": [],
+          "ACTION_IDX": -1,
+          "STATE": "DORMENT"
+        }
+      ],
+      "NAME": "Rabbit Stabilization Release",
+      "DESCRIPTION": "This workflow handles the deployment of a new Rabbit stabilization release!",
+      "ID": "aaddd526-91bf-4a1d-b36c-60b8335f9362",
+      "DIAGRAM": {
+        "id": "82c533b9-9e5d-4493-bade-22671d9042cc",
+        "offsetX": 291,
+        "offsetY": 287,
+        "zoom": 200,
+        "gridSize": 0,
+        "layers": [
+          {
+            "id": "d0d4b4fe-72be-4714-aa81-60384304cb16",
+            "type": "diagram-links",
+            "isSvg": true,
+            "transformed": true,
+            "models": {
+              "30fb0595-cc1f-4157-a9a5-f57ca20003e6": {
+                "id": "30fb0595-cc1f-4157-a9a5-f57ca20003e6",
+                "type": "default",
+                "selected": false,
+                "source": "8c8ad7d1-8a58-4396-8b7d-0af21cc3af5b",
+                "sourcePort": "4b2ef0ae-f754-4467-a2ea-c944f2047ebc",
+                "target": "aae7ac99-f0e9-4db6-9f3e-d86ee78c8c83",
+                "targetPort": "7d77791c-68f0-4640-bab4-24ed9cdcb5c4",
+                "points": [
+                  {
+                    "id": "95794334-e0a5-462c-9a36-a7924918954b",
+                    "type": "point",
+                    "x": 151.84375,
+                    "y": 67.5
+                  },
+                  {
+                    "id": "9f4c6f7b-7860-4831-92f4-9e98ba1c9072",
+                    "type": "point",
+                    "x": 228.203125,
+                    "y": 122
+                  }
+                ],
+                "labels": [],
+                "width": 3,
+                "color": "gray",
+                "curvyness": 50,
+                "selectedColor": "rgb(0,192,255)"
+              },
+              "f1fc3a09-a36e-4c50-9abc-9f806c2c13f4": {
+                "id": "f1fc3a09-a36e-4c50-9abc-9f806c2c13f4",
+                "type": "default",
+                "selected": false,
+                "source": "cf99d643-1c32-4a4e-b7d5-2d3a5d2934df",
+                "sourcePort": "eeca33b0-2aae-446b-9ae0-ec428bf29c5f",
+                "target": "aae7ac99-f0e9-4db6-9f3e-d86ee78c8c83",
+                "targetPort": "7d77791c-68f0-4640-bab4-24ed9cdcb5c4",
+                "points": [
+                  {
+                    "id": "fe37367b-7075-4706-a547-04ac0f956f97",
+                    "type": "point",
+                    "x": 159.203125,
+                    "y": 176.5
+                  },
+                  {
+                    "id": "5a7f0f19-e0f3-4eff-b24a-7ac244bd25de",
+                    "type": "point",
+                    "x": 228.203125,
+                    "y": 122
+                  }
+                ],
+                "labels": [],
+                "width": 3,
+                "color": "gray",
+                "curvyness": 50,
+                "selectedColor": "rgb(0,192,255)"
+              }
+            }
+          },
+          {
+            "id": "33846bcb-0ed5-4832-919f-ffd213624d73",
+            "type": "diagram-nodes",
+            "isSvg": false,
+            "transformed": true,
+            "models": {
+              "8c8ad7d1-8a58-4396-8b7d-0af21cc3af5b": {
+                "id": "8c8ad7d1-8a58-4396-8b7d-0af21cc3af5b",
+                "type": "Task",
+                "selected": true,
+                "x": 32.359375,
+                "y": 25,
+                "ports": [
+                  {
+                    "id": "eac6393f-39fb-4643-abde-653a66ba1098",
+                    "type": "default",
+                    "x": 34.359375,
+                    "y": 60,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "8c8ad7d1-8a58-4396-8b7d-0af21cc3af5b",
+                    "links": [],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "4b2ef0ae-f754-4467-a2ea-c944f2047ebc",
+                    "type": "default",
+                    "x": 144.34375,
+                    "y": 60,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "8c8ad7d1-8a58-4396-8b7d-0af21cc3af5b",
+                    "links": [
+                      "30fb0595-cc1f-4157-a9a5-f57ca20003e6"
+                    ],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Create JIRA Ticket",
+                "color": "rgb(0,192,255)",
+                "portsInOrder": [
+                  "eac6393f-39fb-4643-abde-653a66ba1098"
+                ],
+                "portsOutOrder": [
+                  "4b2ef0ae-f754-4467-a2ea-c944f2047ebc"
+                ]
+              },
+              "cf99d643-1c32-4a4e-b7d5-2d3a5d2934df": {
+                "id": "cf99d643-1c32-4a4e-b7d5-2d3a5d2934df",
+                "type": "Task",
+                "selected": false,
+                "x": 25,
+                "y": 134,
+                "ports": [
+                  {
+                    "id": "f684d13e-dc99-4fd1-91d1-33d7f7599ca1",
+                    "type": "default",
+                    "x": 27,
+                    "y": 169,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "cf99d643-1c32-4a4e-b7d5-2d3a5d2934df",
+                    "links": [],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "eeca33b0-2aae-446b-9ae0-ec428bf29c5f",
+                    "type": "default",
+                    "x": 151.703125,
+                    "y": 169,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "cf99d643-1c32-4a4e-b7d5-2d3a5d2934df",
+                    "links": [
+                      "f1fc3a09-a36e-4c50-9abc-9f806c2c13f4"
+                    ],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Branch From Stabilization",
+                "color": "rgb(0,192,255)",
+                "portsInOrder": [
+                  "f684d13e-dc99-4fd1-91d1-33d7f7599ca1"
+                ],
+                "portsOutOrder": [
+                  "eeca33b0-2aae-446b-9ae0-ec428bf29c5f"
+                ]
+              },
+              "aae7ac99-f0e9-4db6-9f3e-d86ee78c8c83": {
+                "id": "aae7ac99-f0e9-4db6-9f3e-d86ee78c8c83",
+                "type": "Task",
+                "selected": false,
+                "x": 218.703125,
+                "y": 79.5,
+                "ports": [
+                  {
+                    "id": "7d77791c-68f0-4640-bab4-24ed9cdcb5c4",
+                    "type": "default",
+                    "x": 220.703125,
+                    "y": 114.5,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "aae7ac99-f0e9-4db6-9f3e-d86ee78c8c83",
+                    "links": [
+                      "30fb0595-cc1f-4157-a9a5-f57ca20003e6",
+                      "f1fc3a09-a36e-4c50-9abc-9f806c2c13f4"
+                    ],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "26d55655-47f9-458b-a829-8619158011dd",
+                    "type": "default",
+                    "x": 330.6875,
+                    "y": 114.5,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "aae7ac99-f0e9-4db6-9f3e-d86ee78c8c83",
+                    "links": [],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Create PR",
+                "color": "rgb(0,192,255)",
+                "portsInOrder": [
+                  "7d77791c-68f0-4640-bab4-24ed9cdcb5c4"
+                ],
+                "portsOutOrder": [
+                  "26d55655-47f9-458b-a829-8619158011dd"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "TASKS": [
+        {
+          "NAME": "Duplicate CI Gate Files",
+          "ID": "4cd6fc30-52f3-47e8-a083-50889a2982d5",
+          "ACTIONS": [
+            {
+              "NAME": "create",
+              "TYPE": "BASH",
+              "ID": "1f6109f5-257b-4b03-9858-dd589c7e1e72",
+              "DETAILS": {
+                "CMD": "touch ci-gate2.json"
+              }
+            },
+            {
+              "NAME": "copy",
+              "TYPE": "BASH",
+              "ID": "e4e9cf90-f5c4-4ce8-93a0-e975f694435c",
+              "DETAILS": {
+                "CMD": "cp ci-gate2.json ci-gate2-something.json"
+              }
+            }
+          ],
+          "ACTION_IDX": -1,
+          "STATE": "DORMENT"
+        },
+        {
+          "NAME": "Rename Duplicates to RTL",
+          "ID": "fc2c1306-ef1b-4429-88c9-cd0137e34c53",
+          "ACTIONS": [
+            {
+              "NAME": "copy",
+              "TYPE": "BASH",
+              "ID": "04628289-473b-4d8c-9bc7-054db4aca7e3",
+              "DETAILS": {
+                "CMD": "mv ci-gate2-something.json ci-gate2-rtl.json"
+              }
+            }
+          ],
+          "ACTION_IDX": -1,
+          "STATE": "DORMENT"
+        },
+        {
+          "NAME": "Run generate test suites util on RTL files",
+          "ID": "77f06dbe-2950-4d7a-99ee-c5429aac4a39",
+          "ACTIONS": [
+            {
+              "NAME": "generate",
+              "TYPE": "BASH",
+              "ID": "710757b0-47d6-4738-b62c-f5d2973da302",
+              "DETAILS": {
+                "CMD": "echo 'Generated test suite!'"
+              }
+            }
+          ],
+          "ACTION_IDX": -1,
+          "STATE": "DORMENT"
+        },
+        {
+          "NAME": "Push to rabbit branch",
+          "ID": "3e648eab-5025-46cc-8932-128c34c2ce6b",
+          "ACTIONS": [
+            {
+              "NAME": "push",
+              "TYPE": "BASH",
+              "ID": "90f65812-7579-48ad-91f3-a6f5e2d57d9b",
+              "DETAILS": {
+                "CMD": "git push blabla"
+              }
+            }
+          ],
+          "ACTION_IDX": 1,
+          "STATE": "DORMENT"
+        }
+      ],
+      "NAME": "Release New RTL Test Suites",
+      "DESCRIPTION": "This workflow generates new test suites for an RTL release.",
+      "ID": "a9774a4c-f621-42c5-bfff-fe3ebc68df5e",
+      "DIAGRAM": {
+        "id": "9d5c4be5-931a-4755-8d31-765d18af75dc",
+        "offsetX": 359,
+        "offsetY": 340,
+        "zoom": 200,
+        "gridSize": 0,
+        "layers": [
+          {
+            "id": "a8e4b608-ae26-48c1-9333-c5275127cfe7",
+            "type": "diagram-links",
+            "isSvg": true,
+            "transformed": true,
+            "models": {
+              "8e76c00b-9f40-45c7-a1fa-7cde43599b28": {
+                "id": "8e76c00b-9f40-45c7-a1fa-7cde43599b28",
+                "type": "default",
+                "selected": false,
+                "source": "4cd6fc30-52f3-47e8-a083-50889a2982d5",
+                "sourcePort": "171c6e63-cfeb-4cbe-80f4-f36f4030824e",
+                "target": "fc2c1306-ef1b-4429-88c9-cd0137e34c53",
+                "targetPort": "1c73018d-75b3-49f8-96f8-a2fbf8fd6391",
+                "points": [
+                  {
+                    "id": "a157d9b3-bd1b-48fc-8cd7-2256c6b2e2b5",
+                    "type": "point",
+                    "x": 146.078125,
+                    "y": 67.5
+                  },
+                  {
+                    "id": "2c42d06c-6eba-4ce1-9f09-ffe3bd8ade5c",
+                    "type": "point",
+                    "x": 215.0625,
+                    "y": 67.5
+                  }
+                ],
+                "labels": [],
+                "width": 3,
+                "color": "gray",
+                "curvyness": 50,
+                "selectedColor": "rgb(0,192,255)"
+              },
+              "6789c679-c4bd-4476-a480-428d4b174a1b": {
+                "id": "6789c679-c4bd-4476-a480-428d4b174a1b",
+                "type": "default",
+                "selected": false,
+                "source": "fc2c1306-ef1b-4429-88c9-cd0137e34c53",
+                "sourcePort": "82150016-9257-4045-9faf-131ea29d09a9",
+                "target": "77f06dbe-2950-4d7a-99ee-c5429aac4a39",
+                "targetPort": "35a48937-bd7b-4e44-b108-adea4e689141",
+                "points": [
+                  {
+                    "id": "c7f11de5-1e07-49fe-bcd8-e5e153ac3721",
+                    "type": "point",
+                    "x": 345.546875,
+                    "y": 67.5
+                  },
+                  {
+                    "id": "7b8008d9-b0db-4813-9706-ab2a3ae86479",
+                    "type": "point",
+                    "x": 414.53125,
+                    "y": 67.5
+                  }
+                ],
+                "labels": [],
+                "width": 3,
+                "color": "gray",
+                "curvyness": 50,
+                "selectedColor": "rgb(0,192,255)"
+              },
+              "ba966af8-8f48-4060-bb34-c39e83aa0507": {
+                "id": "ba966af8-8f48-4060-bb34-c39e83aa0507",
+                "type": "default",
+                "selected": false,
+                "source": "77f06dbe-2950-4d7a-99ee-c5429aac4a39",
+                "sourcePort": "a41c031c-281c-4c1f-901b-61c71622fa7f",
+                "target": "3e648eab-5025-46cc-8932-128c34c2ce6b",
+                "targetPort": "18014bb4-f236-4b15-b9a5-40df5110b54b",
+                "points": [
+                  {
+                    "id": "bdac3087-d10c-407d-96ed-8a874e1f52a9",
+                    "type": "point",
+                    "x": 613.328125,
+                    "y": 67.5
+                  },
+                  {
+                    "id": "90550852-b15a-4979-a4d9-d884b7be477b",
+                    "type": "point",
+                    "x": 682.328125,
+                    "y": 67.5
+                  }
+                ],
+                "labels": [],
+                "width": 3,
+                "color": "gray",
+                "curvyness": 50,
+                "selectedColor": "rgb(0,192,255)"
+              }
+            }
+          },
+          {
+            "id": "e4715781-51a6-4d47-b6ca-6b56d004e65a",
+            "type": "diagram-nodes",
+            "isSvg": false,
+            "transformed": true,
+            "models": {
+              "4cd6fc30-52f3-47e8-a083-50889a2982d5": {
+                "id": "4cd6fc30-52f3-47e8-a083-50889a2982d5",
+                "type": "Task",
+                "selected": false,
+                "x": 25,
+                "y": 25,
+                "ports": [
+                  {
+                    "id": "97cb40d8-f71c-4ba0-b7e6-7311b1f762a2",
+                    "type": "default",
+                    "x": 27,
+                    "y": 60,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "4cd6fc30-52f3-47e8-a083-50889a2982d5",
+                    "links": [],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "171c6e63-cfeb-4cbe-80f4-f36f4030824e",
+                    "type": "default",
+                    "x": 138.578125,
+                    "y": 60,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "4cd6fc30-52f3-47e8-a083-50889a2982d5",
+                    "links": [
+                      "8e76c00b-9f40-45c7-a1fa-7cde43599b28"
+                    ],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Duplicate CI Gate Files",
+                "color": "rgb(100, 167, 11)",
+                "portsInOrder": [
+                  "97cb40d8-f71c-4ba0-b7e6-7311b1f762a2"
+                ],
+                "portsOutOrder": [
+                  "171c6e63-cfeb-4cbe-80f4-f36f4030824e"
+                ]
+              },
+              "fc2c1306-ef1b-4429-88c9-cd0137e34c53": {
+                "id": "fc2c1306-ef1b-4429-88c9-cd0137e34c53",
+                "type": "Task",
+                "selected": false,
+                "x": 205.5625,
+                "y": 25,
+                "ports": [
+                  {
+                    "id": "1c73018d-75b3-49f8-96f8-a2fbf8fd6391",
+                    "type": "default",
+                    "x": 207.5625,
+                    "y": 60,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "fc2c1306-ef1b-4429-88c9-cd0137e34c53",
+                    "links": [
+                      "8e76c00b-9f40-45c7-a1fa-7cde43599b28"
+                    ],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "82150016-9257-4045-9faf-131ea29d09a9",
+                    "type": "default",
+                    "x": 338.046875,
+                    "y": 60,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "fc2c1306-ef1b-4429-88c9-cd0137e34c53",
+                    "links": [
+                      "6789c679-c4bd-4476-a480-428d4b174a1b"
+                    ],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Rename Duplicates to RTL",
+                "color": "rgb(100, 167, 11)",
+                "portsInOrder": [
+                  "1c73018d-75b3-49f8-96f8-a2fbf8fd6391"
+                ],
+                "portsOutOrder": [
+                  "82150016-9257-4045-9faf-131ea29d09a9"
+                ]
+              },
+              "77f06dbe-2950-4d7a-99ee-c5429aac4a39": {
+                "id": "77f06dbe-2950-4d7a-99ee-c5429aac4a39",
+                "type": "Task",
+                "selected": true,
+                "x": 405.03125,
+                "y": 25,
+                "ports": [
+                  {
+                    "id": "35a48937-bd7b-4e44-b108-adea4e689141",
+                    "type": "default",
+                    "x": 407.03125,
+                    "y": 60,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "77f06dbe-2950-4d7a-99ee-c5429aac4a39",
+                    "links": [
+                      "6789c679-c4bd-4476-a480-428d4b174a1b"
+                    ],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "a41c031c-281c-4c1f-901b-61c71622fa7f",
+                    "type": "default",
+                    "x": 605.828125,
+                    "y": 60,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "77f06dbe-2950-4d7a-99ee-c5429aac4a39",
+                    "links": [
+                      "ba966af8-8f48-4060-bb34-c39e83aa0507"
+                    ],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Run generate test suites util on RTL files",
+                "color": "rgb(100, 167, 11)",
+                "portsInOrder": [
+                  "35a48937-bd7b-4e44-b108-adea4e689141"
+                ],
+                "portsOutOrder": [
+                  "a41c031c-281c-4c1f-901b-61c71622fa7f"
+                ]
+              },
+              "3e648eab-5025-46cc-8932-128c34c2ce6b": {
+                "id": "3e648eab-5025-46cc-8932-128c34c2ce6b",
+                "type": "Task",
+                "selected": false,
+                "x": 672.828125,
+                "y": 25,
+                "ports": [
+                  {
+                    "id": "18014bb4-f236-4b15-b9a5-40df5110b54b",
+                    "type": "default",
+                    "x": 674.828125,
+                    "y": 60,
+                    "name": "IN",
+                    "alignment": "left",
+                    "parentNode": "3e648eab-5025-46cc-8932-128c34c2ce6b",
+                    "links": [
+                      "ba966af8-8f48-4060-bb34-c39e83aa0507"
+                    ],
+                    "in": true,
+                    "label": "IN"
+                  },
+                  {
+                    "id": "8d18c0a2-1517-44f0-b53c-0e0f4d289b6b",
+                    "type": "default",
+                    "x": 784.8125,
+                    "y": 60,
+                    "name": "OUT",
+                    "alignment": "right",
+                    "parentNode": "3e648eab-5025-46cc-8932-128c34c2ce6b",
+                    "links": [],
+                    "in": false,
+                    "label": "OUT"
+                  }
+                ],
+                "name": "Push to rabbit branch",
+                "color": "rgb(100, 0, 0)",
+                "portsInOrder": [
+                  "18014bb4-f236-4b15-b9a5-40df5110b54b"
+                ],
+                "portsOutOrder": [
+                  "8d18c0a2-1517-44f0-b53c-0e0f4d289b6b"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
