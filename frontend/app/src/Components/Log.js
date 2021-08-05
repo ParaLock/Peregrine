@@ -29,20 +29,13 @@ class Log extends React.Component {
 
                 if(item.MSG.TYPE == "LOG") {
 
-                    oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + " Begin");
+                    oldEntries.push({ str: '[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + " [status] " + " Begin", channel: "status"});
 
                     for(var j in item.MSG.DETAIL.LINES) {
 
                         if(item.MSG.DETAIL.LINES[j] != "") {
-
-                            if(item.MSG.DETAIL.CHANNEL == "error") {
-
-                                oldEntries.push(<font color="red">{'[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + item.MSG.DETAIL.LINES[j]}</font>);
-
-                            } else if(item.MSG.DETAIL.CHANNEL == "standard") {
-
-                                oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + item.MSG.DETAIL.LINES[j]);
-                            }
+                           
+                            oldEntries.push({ str: '[' + Date.now() + '] [' + item.ACTION_NAME + '] [' + item.MSG.DETAIL.CHANNEL + '] ' + item.MSG.DETAIL.LINES[j], channel: item.MSG.DETAIL.CHANNEL});
 
                         }
 
@@ -52,11 +45,10 @@ class Log extends React.Component {
                 
                 if(item.MSG.TYPE == "COMPLETION_STATUS") {
 
-                    oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] Action completed with status: ' + item.MSG.DETAIL.STATUS + " -- REASON: " + item.MSG.DETAIL.MSG);
+                    oldEntries.push({str: '[' + Date.now() + '] [' + item.ACTION_NAME + '] [status] Action completed with status: ' + item.MSG.DETAIL.STATUS + " -- REASON: " + item.MSG.DETAIL.MSG, channel: "status"});
                 }   
 
                 this.setState({entries: oldEntries})
-
 
                 this.updateFlag = !this.updateFlag;
 

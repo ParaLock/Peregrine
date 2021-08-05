@@ -85,11 +85,11 @@ class LogViewer extends React.Component {
 
             this.props.entries.forEach((item) => {
 
-                if(item.toLowerCase().includes(this.state.searchVal.toLowerCase())) {
+                if(item.str.toLowerCase().includes(this.state.searchVal.toLowerCase())) {
 
-                    var val = item.replace(pattern, (match) => `<mark>${match}</mark>`);
-
-                    newEntries.push(<span dangerouslySetInnerHTML={{__html: val}} />);
+                    var val = item.str.replace(pattern, (match) => `<mark>${match}</mark>`);
+ 
+                    newEntries.push({str: val, channel: item.channel});
                 }
             });
 
@@ -105,9 +105,10 @@ class LogViewer extends React.Component {
     renderRow({ index, key, style }) {
         return (
           <Line key={key} style={style}>
-
-            {this.state.entries[index]}
-
+              { this.state.entries[index].channel == "error" && <font color="red"><span dangerouslySetInnerHTML={{__html: this.state.entries[index].str}} /></font>}
+              { this.state.entries[index].channel == "standard" &&  <span dangerouslySetInnerHTML={{__html: this.state.entries[index].str}} />}
+              { this.state.entries[index].channel == "status" && <font color="blue"><span dangerouslySetInnerHTML={{__html: this.state.entries[index].str}} /></font>}
+              { this.state.entries[index].channel == "success" && <font color="green"><span dangerouslySetInnerHTML={{__html: this.state.entries[index].str}} /></font>}
           </Line>
         );
       }
