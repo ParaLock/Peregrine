@@ -1,2 +1,9 @@
-app/node_modules
+node_modules
 npm-debug.log
+package.json
+package-lock.json
+build
+.dockerignore
+**/.git
+**/.DS_Store
+**/node_modules

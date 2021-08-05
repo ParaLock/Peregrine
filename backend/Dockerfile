@@ -1,9 +1,11 @@
 FROM node:14
 
-WORKDIR /usr/src/app
-COPY app/ .
+WORKDIR /app
 
-RUN npm install --silent
+COPY ./app/package.json /app/
+
+RUN npm install 
+RUN npm update 
 
 EXPOSE 8080
-CMD [ "node", "server.js" ]
+CMD [ "node", "src/server.js" ]

@@ -12,7 +12,7 @@ import ActionForm from './Components/ActionForm'
 import Drawer from '@material-ui/core/Drawer';
 import LogViewer from './Components/LogViewer';
 import Log from './Components/Log';
-
+import ExecServiceFactory from './ExecutionEngine/ExecServices/ExecServiceFactory';
 
 import _ from 'lodash'
 
@@ -23,10 +23,16 @@ import createEngine, {
 	NodeModel,
 	DagreEngine,
 	DiagramEngine,
-	PathFindingLinkFactory
+	PathFindingLinkFactory,
+	PortModelAlignment
 } from '@projectstorm/react-diagrams';
 
 import {CanvasWidget, DeleteItemsAction } from '@projectstorm/react-canvas-core';
+
+import { TaskNodeModel } from './Nodes/TaskNodeModel';
+import { TaskNodeFactory } from './Nodes/TaskNodeFactory';
+import { SimplePortFactory } from './Nodes/SimplePortFactory';
+import { TaskPortModel } from './Nodes/TaskPortModel';
 
 
 const Wrapper = styled.div`
@@ -124,6 +130,11 @@ class App extends React.Component {
 			this.engine = createEngine({ registerDefaultDeleteItemsAction: false });
 			this.engine.getActionEventBus().registerAction(new DeleteItemsAction({ keyCodes: [46] }));
 
+			this.engine
+				.getPortFactories()
+				.registerFactory(new SimplePortFactory('Task', (config) => new TaskPortModel(PortModelAlignment.LEFT)));
+			this.engine.getNodeFactories().registerFactory(new TaskNodeFactory());
+
 			this.layoutEngine = new DagreEngine({
 				graph: {
 					rankdir: 'LR',
@@ -136,6 +147,11 @@ class App extends React.Component {
 			this.model = new DiagramModel();
 			// model.addAll(node1, node2, link);
 			this.engine.setModel(this.model);
+
+			var node2 = new TaskNodeModel();
+			node2.setPosition(250, 108);
+
+			this.model.addAll(node2);
 
 			this.state = {
 				logPanelOpen: false,
@@ -151,8 +167,23 @@ class App extends React.Component {
 				workflowFormOpen: false
 			}
 
+			this.execServiceFactory = new ExecServiceFactory();
 
-			
+		}
+
+		componentDidMount() {
+
+
+			var bashService = this.execServiceFactory.getService("BASH");
+
+			bashService.execute("ls -a", "list directories", (msg) => {
+
+				console.log(msg);
+
+			});
+		}
+
+		handleLogging(msg) {
 
 		}
 
@@ -595,7 +626,7 @@ class App extends React.Component {
 
 				<React.Fragment key={"bottom"}>
 					<Drawer variant={"persistent"} anchor={"bottom"} open={this.state.logPanelOpen}>
-						<Log entries={["test1", "test2", "asdasdd", "adaiusdhasiud"]} />
+						<Log execServiceFactory={this.execServiceFactory} />
 					</Drawer>
 				</React.Fragment>
 

@@ -9,16 +9,53 @@ class Log extends React.Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            entries: []
+        }
+
+
     }
     componentDidMount() {
 
         this.updateFlag = !this.updateFlag;
+
+        var services = this.props.execServiceFactory.getAllServices();
+
+        for(var i in services) {
+
+            services[i].registerListener((item)=> {
+
+                var oldEntries = [...this.state.entries];
+
+                if(item.MSG.TYPE == "LOG") {
+
+                    oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + " Begin");
+
+                    for(var j in item.MSG.DETAIL.LINES) {
+
+                        if(item.MSG.DETAIL.LINES[j] != "")
+                            oldEntries.push(item.MSG.DETAIL.LINES[j]);
+
+                    }
+
+                }
+                
+                if(item.MSG.TYPE == "EXIT_STATUS") {
+
+                    oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] Action completed with status: ' + item.MSG.DETAIL.CODE);
+                }   
+
+                this.setState({entries: oldEntries})
+
+            }, "log_listener");
+        }
+
     }
 
     render() {
 
         return <LogViewer 
-                            entries={this.props.entries} 
+                            entries={this.state.entries} 
                             updateFlag={this.updateFlag}
                 />
     }

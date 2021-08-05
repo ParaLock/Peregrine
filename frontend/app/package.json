@@ -8,17 +8,20 @@
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@projectstorm/react-diagrams": "^6.6.0",
+    "axios": "^0.21.1",
     "closest": "^0.0.1",
     "dagre": "^0.8.5",
     "flatted": "^3.2.2",
     "install": "^0.13.0",
     "lodash": "^4.17.21",
+    "websocket": "^1.0.34",
+    "typescript": "^4.3.5",
     "npm": "^7.20.3",
     "pathfinding": "^0.4.18",
     "paths-js": "^0.4.11",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "react-virtualized": "^9.22.3",
     "resize-observer-polyfill": "^1.5.1",
     "styled-components": "^5.3.0"
@@ -46,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "axios": "^0.21.1"
   }
 }
