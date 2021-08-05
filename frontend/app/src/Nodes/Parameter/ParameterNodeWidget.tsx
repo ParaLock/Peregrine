@@ -8,6 +8,21 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import { withStyles } from '@material-ui/core/styles';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import CloseIcon from '@material-ui/icons/Close';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import { FormGroup } from '@material-ui/core';
 
 namespace S {
 	export const Node = styled.div<{ background: string; selected: boolean }>`
@@ -17,6 +32,8 @@ namespace S {
 		color: white;
 		border: solid 2px black;
 		overflow: visible;
+		height: 95px;
+		width: 190px;
 		font-size: 11px;
 		border: solid 2px ${(p) => (p.selected ? 'rgb(0,192,255)' : 'black')};
 	`;
@@ -38,7 +55,7 @@ namespace S {
 		background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
 	`;
 
-	export const InPortsContainer = styled.div`
+	export const PortContainer = styled.div`
 		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
@@ -49,25 +66,13 @@ namespace S {
 			margin-right: 0px;
 		}
 	`;
-
-    export const OutPortsContainer = styled.div`
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-        align-items: flex-end;
-		&:first-of-type {
-			margin-left: 10px;
-		}
-		&:only-child {
-			margin-left: 0px;
-		}
-	`;
 }
 
 const ButtonContainer = styled.div `
     display: flex;
     align-items: center;
     justify-content: center;
+	flex-direction: column;
 
 `;
 
@@ -78,6 +83,7 @@ export interface DefaultNodeProps {
 
 
 export class ParameterNodeWidget extends React.Component<DefaultNodeProps> {
+	
 	generatePort = (port: any) => {
 		return <DefaultPortLabel engine={this.props.engine} port={port} key={port.getID()} />;
 	};
@@ -95,26 +101,17 @@ export class ParameterNodeWidget extends React.Component<DefaultNodeProps> {
                 
                 <ButtonContainer>
 
-                <S.InPortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.InPortsContainer>
-                    <IconButton
-                            size={"small"}
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge={false}
-                            onClick={() => this.props.node.getOptions().onExecute()}
-                        >
-                        <PlayArrowIcon />
-                    </IconButton>
-                    <IconButton
-                            size={"small"}
-                            color="inherit"
-                            aria-label="open drawer"
-                            edge={false}
-                            onClick={() => this.props.node.getOptions().onReset()}
-                        >
-                        <RotateLeftIcon />
-                    </IconButton>
-					<S.OutPortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.OutPortsContainer>
+				<TextField
+						fullWidth={false}
+						label="Value"
+						variant="filled"
+						size="small"
+						//onChange={(evt) => this.handleChange(evt.target.value, "name")}
+						//value={this.state.data["name"] ?? ""}
+						//error={this.state.errors["name"].length > 0}
+                />
+		
+                <S.PortContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortContainer>
                 </ButtonContainer>
 
 			</S.Node>

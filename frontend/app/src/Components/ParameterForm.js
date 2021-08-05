@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -11,7 +12,15 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
-import { getWorkflow, getTask, getAction } from '../Common';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
+import { FormGroup } from '@material-ui/core';
+
+import {getWorkflow, getTask, getAction} from '../Common';
 
 const styles = (theme) => ({
     root: {
@@ -115,7 +124,7 @@ class ParameterForm extends React.Component {
     validateInputs() {
         
         var isValid = true;
-        var errors = {name: ""};
+        var errors = {name: "", type: ""};
      
         for(var i in this.validators) {
 

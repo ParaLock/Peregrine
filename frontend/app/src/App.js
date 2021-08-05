@@ -14,6 +14,7 @@ import LogViewer from './Components/LogViewer';
 import Log from './Components/Log';
 import ExecServiceFactory from './ExecutionEngine/ExecServices/ExecServiceFactory';
 import ParameterPanel from './Components/ParameterPanel';
+import ParameterForm from './Components/ParameterForm';
 
 import {getWorkflow, getTask, getAction} from './Common';
 
@@ -35,6 +36,8 @@ import {CanvasWidget, DeleteItemsAction } from '@projectstorm/react-canvas-core'
 import { TaskNodeModel } from './Nodes/Task/TaskNodeModel';
 import { TaskNodeFactory } from './Nodes/Task/TaskNodeFactory';
 
+import { ParameterNodeModel } from './Nodes/Parameter/ParameterNodeModel';
+import { ParameterNodeFactory } from './Nodes/Parameter/ParameterNodeFactory';
 
 const Wrapper = styled.div`
 		width: 100%;
@@ -153,7 +156,7 @@ class App extends React.Component {
 			this.engine.getActionEventBus().registerAction(this.deleteAction);
 
 			this.engine.getNodeFactories().registerFactory(new TaskNodeFactory());
-
+			this.engine.getNodeFactories().registerFactory(new ParameterNodeFactory());
 
 
 			this.layoutEngine = new DagreEngine({
@@ -286,6 +289,7 @@ class App extends React.Component {
 				NAME: data.name,
 				ID: id,
 				DESCRIPTION: data.description,
+				PARAMETERS: [],
 				TASKS: [],
 				DIAGRAM: new DiagramModel()
 			}
@@ -542,6 +546,7 @@ class App extends React.Component {
 
 		onAddParameter(id) {
 
+			
 			this.toggle("parameter_form", true, true)
 		}
 
@@ -572,6 +577,46 @@ class App extends React.Component {
 
 			this.toggle("action_form", false, true)
 
+		}
+
+		addParameter(data) {
+
+			var id = uuidv4();
+
+			var newParameter = {
+				NAME: data.name,
+				ID: id,
+				TYPE: data.type
+			}
+
+			const node = new ParameterNodeModel({
+				name: data.name,
+				id: id,
+				color: 'rgb(0,192,255)',		
+				onExecute: () => {
+					//this.onTaskExecute(this.state.selected["workflow"], id);
+				},
+				onReset: () => {
+					//this.onTaskReset(this.state.selected["workflow"], id);
+				}
+			});
+
+
+
+			node.registerListener({
+				eventDidFire: (evt) => {
+					this.handleNodeEvent(evt)
+				}
+			});
+
+			var oldWorkflows = [...this.state.workflows];
+			var workflow = getWorkflow(this.state.selected["workflow"], oldWorkflows);
+
+			workflow.DIAGRAM.addNode(node);
+			workflow.PARAMETERS.push(newParameter);
+
+			this.setState({workflows: oldWorkflows});
+			this.toggle("parameter_form", false, true)
 		}
 
 		taskSelected(workflowId, taskId, callback = () => {}) {
@@ -752,6 +797,7 @@ class App extends React.Component {
 
 					{
 						TASKS: tasks,
+						PARAMETERS: this.state.workflows[i].PARAMETERS,
 						NAME: this.state.workflows[i].NAME,
 						DESCRIPTION: this.state.workflows[i].DESCRIPTION,
 						ID: this.state.workflows[i].ID
@@ -796,6 +842,14 @@ class App extends React.Component {
                         open={this.state.openStates["action_form"]} 
                         onClose={() => this.toggle("action_form", false, true)}
 						onAdd={(data) => this.addAction(data)}
+        		/>
+
+				<ParameterForm 
+						selected={this.state.selected}
+						model={this.state.workflows}
+                        open={this.state.openStates["parameter_form"]} 
+                        onClose={() => this.toggle("parameter_form", false, true)}
+						onAdd={(data) => this.addParameter(data)}
         		/>
 
 				<Header	

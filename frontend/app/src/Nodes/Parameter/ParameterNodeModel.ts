@@ -36,6 +36,8 @@ export class ParameterNodeModel extends NodeModel<ParameterNodeModelGenerics> {
 		});
 		this.portsOut = [];
 		this.portsIn = [];
+
+		this.addOutput("");
 	}
 
 	doClone(lookupTable: {}, clone: any): void {
@@ -67,25 +69,25 @@ export class ParameterNodeModel extends NodeModel<ParameterNodeModelGenerics> {
 		return port;
 	}
 
-	addInPort(label: string, after = true): DefaultPortModel {
-		const p = new DefaultPortModel({
-			in: true,
-			name: label,
-			label: label,
-			alignment: PortModelAlignment.LEFT
-		});
-		if (!after) {
-			this.portsIn.splice(0, 0, p);
-		}
-		return this.addPort(p);
-	}
+	// addInPort(label: string, after = true): DefaultPortModel {
+	// 	const p = new DefaultPortModel({
+	// 		in: true,
+	// 		name: label,
+	// 		label: label,
+	// 		alignment: PortModelAlignment.LEFT
+	// 	});
+	// 	if (!after) {
+	// 		this.portsIn.splice(0, 0, p);
+	// 	}
+	// 	return this.addPort(p);
+	// }
 
-	addOutPort(label: string, after = true): DefaultPortModel {
+	addOutput(label: string, after = true): DefaultPortModel {
 		const p = new DefaultPortModel({
 			in: false,
 			name: label,
 			label: label,
-			alignment: PortModelAlignment.RIGHT
+			alignment: PortModelAlignment.BOTTOM
 		});
 		if (!after) {
 			this.portsOut.splice(0, 0, p);
