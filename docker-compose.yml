@@ -23,6 +23,7 @@ services:
     volumes:
       #- ./backend/app/:/app    
       - ./backend/app/src/:/app/src/
+      - data/
    # ports: 
      # - 8080:8080
     network_mode: "host"

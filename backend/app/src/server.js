@@ -44,7 +44,8 @@ function handleBashAction(request, connection) {
 					MSG: {
 						TYPE: "LOG",
 						DETAIL: {
-							LINES: lines 
+							LINES: lines,
+							CHANNEL: "standard" 
 						}
 					}
 				}
@@ -55,6 +56,7 @@ function handleBashAction(request, connection) {
 
 			});
 
+			child.stderr.setEncoding('utf8');
 			child.stderr.on('data', (chunk) => {
 
 				var lines = chunk.split('\n');
@@ -62,7 +64,8 @@ function handleBashAction(request, connection) {
 					MSG: {
 						TYPE: "LOG",
 						DETAIL: {
-							LINES: lines 
+							LINES: lines,
+							CHANNEL: "error"
 						}
 					}
 				}

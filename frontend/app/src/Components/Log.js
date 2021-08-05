@@ -33,8 +33,18 @@ class Log extends React.Component {
 
                     for(var j in item.MSG.DETAIL.LINES) {
 
-                        if(item.MSG.DETAIL.LINES[j] != "")
-                            oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + item.MSG.DETAIL.LINES[j]);
+                        if(item.MSG.DETAIL.LINES[j] != "") {
+
+                            if(item.MSG.DETAIL.CHANNEL == "error") {
+
+                                oldEntries.push(<font color="red">{'[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + item.MSG.DETAIL.LINES[j]}</font>);
+
+                            } else if(item.MSG.DETAIL.CHANNEL == "standard") {
+
+                                oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + item.MSG.DETAIL.LINES[j]);
+                            }
+
+                        }
 
                     }
 

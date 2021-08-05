@@ -92,7 +92,7 @@ const saveFile = async (blob) => {
 
 	var d = new Date().toISOString().split('T')[0]
 
-	a.download = "pelegrin-session-" + d  + '.json';
+	a.download = "peregrin-session-" + d  + '.json';
 	a.href = URL.createObjectURL(blob);
 	a.addEventListener('click', (e) => {
 	  setTimeout(() => URL.revokeObjectURL(a.href), 30 * 1000);
