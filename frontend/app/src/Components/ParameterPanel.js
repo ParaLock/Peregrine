@@ -45,7 +45,7 @@ const Wrapper = styled.div`
 
 `;
 
-class WorkflowPanel extends React.Component {
+class ParameterPanel extends React.Component {
 
     constructor() {
         super();
@@ -71,20 +71,19 @@ class WorkflowPanel extends React.Component {
                                 component="nav"
                                 subheader={
                                     <ListSubheader component="div" id="nested-list-subheader">
-                                        <b>Workflows</b>
+                                        <b>Parameters</b>
                                     </ListSubheader>
                                 }
                             >
                                 <Divider/>
 
-                                { this.props.model.map((workflow)=> {
+                                {  selectedWorkflow && selectedWorkflow.PARAMETERS.map((param)=> {
 
                                         return <StyledListItem
                                             button
-                                            selected={(selectedWorkflow) ? selectedWorkflow.ID === workflow.ID : false}
-                                            onClick={(event) => this.props.workflowSelected(workflow.ID)}
+                                            onClick={(event) => this.props.parameterSelected(param.ID)}
                                         >
-                                            <ListItemText primary={workflow.NAME} secondary={workflow.DESCRIPTION} />
+                                            <ListItemText primary={param.NAME} secondary={param.TYPE} />
                                         </StyledListItem>
 
                                     })
@@ -96,9 +95,9 @@ class WorkflowPanel extends React.Component {
                                 fullWidth={true}  
                                 variant="outlined" 
                                 color="primary"
-                                onClick={this.props.onAddWorkflow.bind(this)}
+                                onClick={this.props.onAddParameter.bind(this)}
                         >
-                        Add Workflow
+                        Add Parameter
                         </Button>
                 </ListWrapper>
             </Wrapper>
@@ -106,4 +105,4 @@ class WorkflowPanel extends React.Component {
     }
 }
 
-export default WorkflowPanel;
+export default ParameterPanel;

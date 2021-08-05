@@ -15,17 +15,18 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
+import { getWorkflow, getTask, getAction } from '../Common';
 
 const StyledListItem = withStyles({
 
     root: {
         '&$selected': {
-          backgroundColor: 'lightgray'
+            backgroundColor: 'lightgray'
         }
-      },
-      selected: {
-       
-      }
+    },
+    selected: {
+
+    }
 })(ListItem);
 
 
@@ -61,88 +62,92 @@ class TaskPanel extends React.Component {
     }
 
     taskSelected(event, name) {
-        this.setState({['show' + name]: !this.state['show'+name]}, () => {
+        this.setState({ ['show' + name]: !this.state['show' + name] }, () => {
             this.props.taskSelected(event, name)
         });
     }
 
     render() {
 
+        var selectedWorkflow = getWorkflow(this.props.selected["workflow"], this.props.model);
+        var selectedTask = getTask(this.props.selected["task"], selectedWorkflow);
+        var selectedAction = getAction(this.props.selected["action"], selectedTask);
+
         return (
 
             <Wrapper>
                 <ListWrapper>
 
-                    <Paper  elevation={3} >
-                            <List 
-                                component="nav"
-                                subheader={
-                                    <ListSubheader component="div" id="nested-list-subheader">
-                                        <b>Tasks</b>
-                                    </ListSubheader>
-                                }
-                            >
-                                <Divider/>
+                    <Paper elevation={3} >
+                        <List
+                            component="nav"
+                            subheader={
+                                <ListSubheader component="div" id="nested-list-subheader">
+                                    <b>Tasks</b>
+                                </ListSubheader>
+                            }
+                        >
+                            <Divider />
 
-                                { this.props.selectedWorkflow && this.props.selectedWorkflow.TASKS.map((task, index)=> {
+                            {selectedWorkflow && selectedWorkflow.TASKS.map((task, index) => {
 
-                                        return <span style={{marginLeft: '0px', paddingLeft: '0px'}}>
-                                        <StyledListItem 
-                                            button 
-                                            selected={(this.props.selectedTask) ? this.props.selectedTask.ID === task.ID : false}
-                                            onClick={(event) => {this.taskSelected(this.props.selectedWorkflow.ID, task.ID)}}
-                                        >
-        
-                                            <ListItemText primary={task.NAME} secondary={task.DESCRIPTION}  />
-                                            {this.state["show" + task.ID] ? <ExpandLess /> : <ExpandMore />}
-                                        </StyledListItem>
-                                        <Collapse in={this.state["show" + task.ID]} timeout="auto" unmountOnExit>
-                                            <List component="div" disablePadding>
-                                            
-                                                {
-                                                    task.ACTIONS.map((action) => {
-                                                        console.log(this.props.selectedAction)
-                                                        return <ListItem 
-                                                                        button 
-                                                                        style={{marginLeft: '20px'}}
-                                                                        selected={(this.props.selectedAction) ? this.props.selectedAction.ID === action.ID : false}
-                                                                        onClick={(event) => this.props.actionSelected(this.props.selectedWorkflow.ID, task.ID, action.ID)} 
-                                                                >
-                                                                    <ListItemText primary={action.NAME} />
-                                                                </ListItem>
-                                                    })
-                                                }
+                                return <span style={{ marginLeft: '0px', paddingLeft: '0px' }}>
+                                    <StyledListItem
+                                        button
+                                        selected={(selectedTask) ? selectedTask.ID === task.ID : false}
+                                        onClick={(event) => { this.taskSelected(selectedWorkflow.ID, task.ID) }}
+                                    >
 
-                                                <Button 
-                                                        fullWidth={false}  
-                                                        variant="outlined" 
-                                                        color="primary"
-                                                        onClick={() => {this.props.onAddAction(task.ID) } }
-                                                >
+                                        <ListItemText primary={task.NAME} secondary={task.DESCRIPTION} />
+                                        {this.state["show" + task.ID] ? <ExpandLess /> : <ExpandMore />}
+                                    </StyledListItem>
+                                    <Collapse in={this.state["show" + task.ID]} timeout="auto" unmountOnExit>
+                                        <List component="div" disablePadding>
+
+                                            {
+                                                task.ACTIONS.map((action) => {
+
+                                                    return <ListItem
+                                                        button
+                                                        style={{ marginLeft: '20px' }}
+                                                        selected={(selectedAction) ? selectedAction.ID === action.ID : false}
+                                                        onClick={(event) => this.props.actionSelected(selectedWorkflow.ID, task.ID, action.ID)}
+                                                    >
+                                                        <ListItemText primary={action.NAME} />
+                                                    </ListItem>
+                                                })
+                                            }
+
+                                            <Button
+                                                fullWidth={false}
+                                                variant="outlined"
+                                                color="primary"
+                                                onClick={() => { this.props.onAddAction(task.ID) }}
+                                            >
                                                 Add Action
                                                 </Button>
 
-                                            </List>
-                                        </Collapse>
-                                        </span>
+                                        </List>
+                                    </Collapse>
+                                </span>
 
-                                    })
-                                }
+                            })
+                            }
 
-                            </List>
-                        </Paper>
-                        <Button 
-                                fullWidth={true}  
-                                variant="outlined" 
-                                color="primary"
-                                onClick={this.props.onAddTask.bind(this)}
-                        >
+                        </List>
+                    </Paper>
+                    <Button
+                        fullWidth={true}
+                        variant="outlined"
+                        color="primary"
+                        onClick={this.props.onAddTask.bind(this)}
+                    >
                         Add Task
                         </Button>
                 </ListWrapper>
 
             </Wrapper>
-          )
+        )
     }
 }
 

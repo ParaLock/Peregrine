@@ -11,6 +11,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
+import { getWorkflow, getTask, getAction } from '../Common';
 
 const styles = (theme) => ({
     root: {
@@ -43,15 +44,15 @@ const Wrapper = styled.div`
   width: 400px;
 `;
 
-class WorkflowForm extends React.Component {
+class ParameterForm extends React.Component {
 
     constructor() {
 
         super();
 
         this.state = {
-            errors: {name: "", description: ""},
-            data: {name: "", description: ""},
+            errors: {type: "", name: ""},
+            data: {type: "", name: ""},
             isInputValid: true
         }
 
@@ -75,11 +76,11 @@ class WorkflowForm extends React.Component {
 
                     var isValid = true;
 
-                    var workflows = this.props.model;
+                    var tasks = getWorkflow(this.props.selected["workflow"], this.props.model).PARAMETERS ?? [];
 
-                    for(var i in workflows) {
+                    for(var i in tasks) {
 
-                        if(this.state.data["name"] == workflows[i].NAME) {
+                        if(this.state.data["name"] == tasks[i].NAME) {
                             isValid = false;
                         }
                     }
@@ -92,22 +93,8 @@ class WorkflowForm extends React.Component {
                     return false;
 
                 }, 
-                msg: "Workflow name already in use.", 
+                msg: "Parameter name already in use.", 
                 target: "name"
-            },
-            {
-                callback: () => {
-
-                    if(!(this.state.data["description"] == "")) {
-
-                        return true;
-                    }
-
-                    return false;
-    
-                }, 
-                msg: "Description required.", 
-                target: "description"
             }
         ]
     }
@@ -128,7 +115,7 @@ class WorkflowForm extends React.Component {
     validateInputs() {
         
         var isValid = true;
-        var errors = {name: "", description: ""};
+        var errors = {name: ""};
      
         for(var i in this.validators) {
 
@@ -175,7 +162,7 @@ class WorkflowForm extends React.Component {
 
         return <Dialog onClose={() => this.props.onClose()} aria-labelledby="customized-dialog-title" open={this.props.open}>
                     <StyledDialogTitle id="customized-dialog-title" onClose={() => this.props.onClose()}>
-                        New Workflow Form
+                        New Task Form
                     </StyledDialogTitle>
                     <DialogContent dividers>
                         <Wrapper>
@@ -190,23 +177,21 @@ class WorkflowForm extends React.Component {
                                 error={this.state.errors["name"].length > 0}
                             />
              
-                            <br/>
-                            <br/>
-                            <TextField
-                                fullWidth={true}
-                                label="Description"
-                                variant="filled"
-                                size="small"
-                                multiline={true}
-                                minRows={5}
-                                helperText={this.state.errors["description"]}
-                                onChange={(evt) => this.handleChange(evt.target.value, "description")}
-                                value={this.state.data["description"] ?? ""}
-                                error={this.state.errors["description"].length > 0}
-                            />
                         </Wrapper>
        
+                        <InputLabel >Type</InputLabel>
+                                <Select
 
+                                    style = {{width: 150, marginRight: 10}}
+                                    variant={"outlined"}
+                                    helperText={this.state.errors["type"]}
+                                    onChange={(evt) => this.handleChange(evt.target.value, "type")}
+                                    value={this.state.data["type"] ?? ""}
+                                    error={this.state.errors["type"].length > 0}
+                                >
+                                <MenuItem value={"STRING"}>String</MenuItem>
+                                </Select>
+ 
                     </DialogContent>
                     <DialogActions>         
                     <Button autoFocus disabled={!this.state.isInputValid} onClick={() => this.onAdd()} color="primary">
@@ -220,4 +205,4 @@ class WorkflowForm extends React.Component {
 
 }
 
-export default WorkflowForm;
+export default ParameterForm;

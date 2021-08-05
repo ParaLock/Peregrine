@@ -13,6 +13,9 @@ import Drawer from '@material-ui/core/Drawer';
 import LogViewer from './Components/LogViewer';
 import Log from './Components/Log';
 import ExecServiceFactory from './ExecutionEngine/ExecServices/ExecServiceFactory';
+import ParameterPanel from './Components/ParameterPanel';
+
+import {getWorkflow, getTask, getAction} from './Common';
 
 import _ from 'lodash'
 
@@ -29,9 +32,8 @@ import createEngine, {
 
 import {CanvasWidget, DeleteItemsAction } from '@projectstorm/react-canvas-core';
 
-import { TaskNodeModel } from './Nodes/TaskNodeModel';
-import { TaskNodeFactory } from './Nodes/TaskNodeFactory';
-import { SimplePortFactory } from './Nodes/SimplePortFactory';
+import { TaskNodeModel } from './Nodes/Task/TaskNodeModel';
+import { TaskNodeFactory } from './Nodes/Task/TaskNodeFactory';
 
 
 const Wrapper = styled.div`
@@ -87,6 +89,24 @@ const TaskPanelWrapper = styled.div`
 	pointer-events:none;
 `;
 
+const ParameterPanelWrapper = styled.div`
+	
+	display: flex;
+	position: absolute;
+	overflow:hidden;
+	right: 0;
+	width: 250px;
+	max-width: ${props => props.open ? "100%" : "0%"};
+	transform: ${props => props.open ? "translateX(0%)" : "translateX(100%)"};
+	transition: opacity 250ms, transform 250ms ease-in-out, max-width 250ms, max-height 250ms ease-in;
+	opacity: ${props => props.open ? "1" : "0"};
+	z-index: 1000;
+	height: 100%;
+    max-height:  ${props => props.logOpen ? "calc(100% - " + (Header.HEIGHT + Log.HEIGHT) + "px)" : "calc(100% - " + Header.HEIGHT + "px)"};
+	pointer-events:none;
+`;
+
+
 const saveFile = async (blob) => {
 	const a = document.createElement('a');
 
@@ -132,10 +152,9 @@ class App extends React.Component {
 
 			this.engine.getActionEventBus().registerAction(this.deleteAction);
 
-			// this.engine
-			// 	.getPortFactories()
-			// 	.registerFactory(new SimplePortFactory('Task', (config) => new TaskPortModel(PortModelAlignment.LEFT)));
 			this.engine.getNodeFactories().registerFactory(new TaskNodeFactory());
+
+
 
 			this.layoutEngine = new DagreEngine({
 				graph: {
@@ -151,17 +170,30 @@ class App extends React.Component {
 			this.engine.setModel(this.model);
 
 			this.state = {
-				logPanelOpen: false,
-				workflowPanelOpen: false,
-				taskPanelOpen: false,
-				taskFormOpen: false,
-				actionFormOpen: false,
-				actionPanelOpen: false,
-				selectedActionId: null,
-				selectedTaskId: null,
-				selectedWorkflowId: null,
-				workflows: [],
-				workflowFormOpen: false
+				openStates: {
+					"log": false,
+					"task_panel": false,
+					"task_form": false,
+					"action_panel": false,
+					"action_form": false,
+					"workflow_panel": false,
+					"workflow_form": false,
+					"conditional_panel": false,
+					"conditional_form": false,
+					"parameter_panel": false,
+					"parameter_form": false
+					 
+				},
+
+				selected: {
+					"action": null,
+					"task": null,
+					"workflow": null,
+					"conditional": null,
+					"parameter": null
+				},
+
+				workflows: []
 			}
 
 			this.execServiceFactory = new ExecServiceFactory();
@@ -173,11 +205,25 @@ class App extends React.Component {
 
 		}
 
+		select(name, id, callback = null) {
+
+			var newState = {...this.state.selected}
+			newState[name] = id;
+
+			this.setState({selected: newState}, ()=> {
+
+				if(callback) {
+
+					callback();
+				}
+			});
+		}
+
 		getNode(id) {
 
 			console.log(id)
 
-			const nodes = this.getWorkflow(this.state.selectedWorkflowId).DIAGRAM.getNodes();
+			const nodes = getWorkflow(this.state.selected["workflow"], this.state.workflows).DIAGRAM.getNodes();
 	
 			var foundNode = null;
 
@@ -193,50 +239,23 @@ class App extends React.Component {
 
 		}
 
-		getWorkflow(id, workflows = null) {
-
-			if(workflows) {
-
-				return workflows.filter((item) => item.ID == id)[0] ?? null;
-			}
-
-			return this.state.workflows.filter((item) => item.ID == id)[0] ?? null;
-		}
-
-		getTask(id, workflow) {
-
-			if(!workflow) {
-				return null;
-			}
-
-			return workflow.TASKS.filter((item) => item.ID == id)[0] ?? null;
-		}
-
-		getAction(id, task) {
-
-			if(!task) {
-				return null;
-			}
-
-			return task.ACTIONS.filter((item) => item.ID == id)[0] ?? null;
-		}
 
 		handleNodeSelect(evt) {
 
 			if(evt.isSelected) {
 
-				this.setState({selectedTaskId: evt.entity.options.id});
+				this.select("task", evt.entity.options.id);
 
 			} else {
 				
-				this.setState({selectedTaskId: null});
+				this.select("task", null);
 			}
 		}
 
 		removeTask(id) {
 
 			var newState = [...this.state.workflows]
-			var workflow = this.getWorkflow(this.state.selectedWorkflowId, newState)
+			var workflow = getWorkflow(this.state.selected["workflow"], newState)
 
 			removeIf(workflow.TASKS, (item) => {
 
@@ -253,7 +272,6 @@ class App extends React.Component {
 				this.handleNodeSelect(evt);
 			}
 
-			//Aweful hack needed here because for some reason this event fires randomly when typing in form.
 			if(evt.function == "entityRemoved") {
 
 				this.removeTask(evt.entity.options.id)
@@ -279,13 +297,13 @@ class App extends React.Component {
 
 			});
 
-			this.toggleWorkflowForm(false)
+			this.toggle("workflow_form", false, true)
 
 		}
 
 		onTaskReset(workflowId, taskId) {
 
-			var task = this.getTask(taskId, this.getWorkflow(workflowId));
+			var task = getTask(taskId, getWorkflow(workflowId, this.state.workflows));
 
 			task.STATE = "DORMENT";
 			task.ACTION_IDX = -1;
@@ -301,7 +319,7 @@ class App extends React.Component {
 
 		onTaskExecute(workflowId, taskId) {
 
-			var task = this.getTask(taskId, this.getWorkflow(workflowId));
+			var task = getTask(taskId, getWorkflow(workflowId, this.state.workflows));
 
 			if(task.STATE !== "DORMENT") {
 
@@ -376,7 +394,7 @@ class App extends React.Component {
 
 		addTask(data) {
 
-			if(this.state.selectedWorkflowId) {
+			if(this.state.selected["workflow"]) {
 
 				var id = uuidv4();
 
@@ -393,10 +411,10 @@ class App extends React.Component {
 					id: id,
 					color: 'rgb(0,192,255)',		
 					onExecute: () => {
-						this.onTaskExecute(this.state.selectedWorkflowId, id);
+						this.onTaskExecute(this.state.selected["workflow"], id);
 					},
 					onReset: () => {
-						this.onTaskReset(this.state.selectedWorkflowId, id);
+						this.onTaskReset(this.state.selected["workflow"], id);
 					}
 				});
 
@@ -411,7 +429,7 @@ class App extends React.Component {
 
 				var oldState = [...this.state.workflows];
 				
-				var oldWorkflow = this.getWorkflow(this.state.selectedWorkflowId, oldState);
+				var oldWorkflow = getWorkflow(this.state.selected["workflow"], oldState);
 
 				oldWorkflow.TASKS.push(newTask);
 				oldWorkflow.DIAGRAM.addNode(node);
@@ -420,7 +438,7 @@ class App extends React.Component {
 
 			}
 
-			this.toggleTaskForm(false)
+			this.toggle("task_form", false, true)
 		}
 
 		toggleDiagramKeyShortcuts(state) {
@@ -435,44 +453,59 @@ class App extends React.Component {
 			}
 		}
 
-		toggleActionForm(state) {
-			
-			this.toggleDiagramKeyShortcuts(state);
-			this.setState({actionFormOpen: state});
+		toggle(name, state = null, disableDiagramActions = false, otherToggles = []) {
+
+			if(disableDiagramActions) {
+				this.toggleDiagramKeyShortcuts(state);
+			}
+
+			var newState = {...this.state.openStates}
+
+
+			if(state != null) {
+
+				newState[name] = state;
+
+			} else {
+
+				newState[name] = !newState[name];
+			}
+
+			for(var i in otherToggles) {
+
+				newState[otherToggles[i][0]] = otherToggles[i][1];
+			}
+
+			this.setState({openStates: newState});
+
 		}
 
-		toggleWorkflowPanel() {
+		toggleMany(items) {
 
-			this.setState({workflowPanelOpen: !this.state.workflowPanelOpen});
-		}
+			var newState = {...this.state.openStates}
 
-		toggleWorkflowForm(state) {
+			for(var i in items) {
+	
+				if(items[i].state != null) {
+	
+					newState[items[i].name] = items[i].state;
+	
+				} else {
+	
+					newState[items[i].name] = !newState[items[i].name];
+				}
+	
+			}
 
-			this.toggleDiagramKeyShortcuts(state);
-			this.setState({workflowFormOpen: state});
-		}
+			this.setState({openStates: newState});
 
-		toggleTaskForm(state) {
-
-			this.toggleDiagramKeyShortcuts(state);
-			this.setState({taskFormOpen: state})
-		}
-
-
-		toggleTaskPanel() {
-			this.setState({taskPanelOpen: !this.state.taskPanelOpen});
-		}
-
-		toggleLogPanel() {
-			this.setState({logPanelOpen: !this.state.logPanelOpen});
 		}
 
 		workflowSelected(workflowId) {
 			
-
-			this.setState({selectedWorkflowId: workflowId}, () => {
+			this.select("workflow", workflowId, () => {
 				
-				var workflow = this.getWorkflow(workflowId);
+				var workflow = getWorkflow(workflowId, this.state.workflows);
 
 				this.engine.setModel(workflow.DIAGRAM)
 				this.layoutEngine.redistribute(workflow.DIAGRAM);
@@ -484,28 +517,32 @@ class App extends React.Component {
 
 		actionSelected(workflowId, taskId, actionId) {
 
-			var workflow = this.getWorkflow(workflowId);
-			//var task = this.getTask(taskId, workflow);
-
 			this.taskSelected(workflowId, taskId, () => {
-				this.setState({selectedActionId: actionId}, () => {
-				
-					//var workflow = this.getWorkflow(workflowId);
-	
-				});
+
+				this.select("action", actionId);
+
 			});
 
+		}
+
+		parameterSelected(parameterId) {
+
+			this.select("parameter", parameterId);
 		}
 
 		onAddAction(id) {
 			
 
-			this.taskSelected(this.state.selectedWorkflowId, id, ()=> {
+			this.taskSelected(this.state.selected["workflow"], id, ()=> {
 
-				this.toggleActionForm(true)
-
+				this.toggle("action_form", true, true)
 			});
 
+		}
+
+		onAddParameter(id) {
+
+			this.toggle("parameter_form", true, true)
 		}
 
 		addAction(data) {
@@ -522,7 +559,7 @@ class App extends React.Component {
 
 			var oldWorkflows = [...this.state.workflows];
 
-			var task = this.getTask(this.state.selectedTaskId, this.getWorkflow(this.state.selectedWorkflowId, oldWorkflows))
+			var task = getTask(this.state.selected["task"], getWorkflow(this.state.selected["workflow"], oldWorkflows))
 
 			if(task.STATE == "RUNNING") {
 
@@ -533,15 +570,15 @@ class App extends React.Component {
 
 			this.setState({workflows: oldWorkflows});
 
-			this.toggleActionForm(false)
+			this.toggle("action_form", false, true)
 
 		}
 
 		taskSelected(workflowId, taskId, callback = () => {}) {
 		
-			this.setState({selectedTaskId: taskId}, ()=> {
+			this.select("task", taskId, ()=> {
 
-				var selectedWorkflow = this.getWorkflow(workflowId);
+				var selectedWorkflow = getWorkflow(workflowId, this.state.workflows);
 
 				var prevSelected = Object.values(selectedWorkflow.DIAGRAM.activeNodeLayer.models).filter((item) => item.options.selected == true);
 				var node = Object.values(selectedWorkflow.DIAGRAM.activeNodeLayer.models).filter((item) => item.options.id == taskId)[0];
@@ -603,6 +640,10 @@ class App extends React.Component {
 
 					if(!("ID" in workflows[i])) {
 						workflows[i]["ID"] = uuidv4();
+					}
+
+					if(!("PARAMETERS" in workflows[i])) {
+						workflows[i]["PARAMETERS"] = [];
 					}
 
 					for(var j in workflows[i].TASKS) {
@@ -735,71 +776,85 @@ class App extends React.Component {
 			return <Wrapper>
 
 				<WorkflowForm 
-                        workflows={this.state.workflows}
-                        open={this.state.workflowFormOpen} 
-                        onClose={() => this.toggleWorkflowForm(false)}
+                        model={this.state.workflows}
+                        open={this.state.openStates["workflow_form"]} 
+                        onClose={() => this.toggle("workflow_form", false, true)}
 						onAdd={(data) => this.addWorkflow(data)}
         		/>
 
 				<TaskForm 
-                        tasks={(this.state.selectedWorkflowId) ? this.getWorkflow(this.state.selectedWorkflowId) : null }
-                        open={this.state.taskFormOpen} 
-                        onClose={() => this.toggleTaskForm(false)}
+						selected={this.state.selected}
+						model={this.state.workflows}
+                        open={this.state.openStates["task_form"]} 
+                        onClose={() => this.toggle("task_form", false, true)}
 						onAdd={(data) => this.addTask(data)}
         		/>
 
 				<ActionForm 
-                        actions={(this.state.selectedTaskId) ? this.getTask(this.state.selectedTaskId, this.getWorkflow(this.state.selectedWorkflowId)) : null }
-                        open={this.state.actionFormOpen} 
-                        onClose={() => this.toggleActionForm(false)}
+						selected={this.state.selected}
+						model={this.state.workflows}
+                        open={this.state.openStates["action_form"]} 
+                        onClose={() => this.toggle("action_form", false, true)}
 						onAdd={(data) => this.addAction(data)}
         		/>
 
 				<Header	
 				
-					onToggleWorkflowPanel={this.toggleWorkflowPanel.bind(this)} 
-					onToggleTaskPanel={this.toggleTaskPanel.bind(this)}
-					onToggleLog={this.toggleLogPanel.bind(this)}
+					toggle={this.toggle.bind(this)}
+					toggleMany = {this.toggleMany.bind(this)}
 					onDownload={this.onDownload.bind(this)}
 					onUpload={this.onUpload.bind(this)}
 
 
-
 				></Header>
 
-				<Columns logOpen={this.state.logPanelOpen}>
+				<Columns logOpen={this.state.openStates["log_panel"]}>
 
-					<WorkflowPanelWrapper open={this.state.workflowPanelOpen} logOpen={this.state.logPanelOpen}>
+					<WorkflowPanelWrapper open={this.state.openStates["workflow_panel"]} logOpen={this.state.openStates["log"]}>
 							<WorkflowPanel 
-											open={this.state.workflowPanelOpen}  
-											workflowSelected={this.workflowSelected.bind(this)} 
-											selectedWorkflow={this.getWorkflow(this.state.selectedWorkflowId)} 
-											workflows={this.state.workflows}
-											onAddWorkflow={() => this.toggleWorkflowForm(true)}
+											open={this.state.openStates["workflow_panel"]}  
+											selected={this.state.selected}
+											model={this.state.workflows}
+											onClose={() => this.toggle("workflow_form", false, true)}
+											onAddWorkflow={() => this.toggle("workflow_form", true, true)}
+											workflowSelected={(id) => this.workflowSelected(id)}
 							/> 
 					</WorkflowPanelWrapper>
 
-					<TaskPanelWrapper open={this.state.taskPanelOpen} logOpen={this.state.logPanelOpen}>
+					<TaskPanelWrapper open={this.state.openStates["task_panel"]} logOpen={this.state.openStates["log"]}>
 
 							<TaskPanel 
-											open={this.state.taskPanelOpen}  
+											open={this.state.openStates["task_panel"]}  
 											taskSelected={this.taskSelected.bind(this)} 
-											selectedWorkflow={this.getWorkflow(this.state.selectedWorkflowId)} 
-											selectedTask={this.getTask(this.state.selectedTaskId, this.getWorkflow(this.state.selectedWorkflowId)) }
-											selectedAction={this.getAction(this.state.selectedActionId, this.getTask(this.state.selectedTaskId, this.getWorkflow(this.state.selectedWorkflowId))) }
-											onAddTask={() => this.toggleTaskForm(true)}
-											onAddAction={(taskName) => this.onAddAction(taskName)}
 											actionSelected={this.actionSelected.bind(this)}
+											selected={this.state.selected}
+											model={this.state.workflows}
+											onAddTask={() => this.toggle("task_form", true, true)}
+											onAddAction={(taskId) => this.onAddAction(taskId)}
 							/> 
 
 					</TaskPanelWrapper>
+
+					<ParameterPanelWrapper open={this.state.openStates["parameter_panel"]} logOpen={this.state.openStates["log"]}> 
+					
+						<ParameterPanel
+
+							open={this.state.openStates["parameter_panel"]}  
+							parameterSelected={this.parameterSelected.bind(this)} 
+							selected={this.state.selected}
+							model={this.state.workflows}
+							onAddParameter={(paramId) => this.onAddParameter(paramId)}
+						
+						/>
+
+					</ParameterPanelWrapper>
 
 					<CanvasWidget className="graphContainer" engine={this.engine} />
 
 				</Columns>
 
 				<React.Fragment key={"bottom"}>
-					<Drawer variant={"persistent"} anchor={"bottom"} open={this.state.logPanelOpen}>
+					<Drawer variant={"persistent"} anchor={"bottom"} open={this.state.openStates["log"]}>
 						<Log execServiceFactory={this.execServiceFactory} />
 					</Drawer>
 				</React.Fragment>

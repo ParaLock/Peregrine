@@ -11,6 +11,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
+import { getWorkflow, getTask, getAction } from '../Common';
 
 const styles = (theme) => ({
     root: {
@@ -75,9 +76,11 @@ class TaskForm extends React.Component {
 
                     var isValid = true;
 
-                    for(var i in this.props.tasks) {
+                    var tasks = getWorkflow(this.props.selected["workflow"], this.props.model).TASKS ?? [];
 
-                        if(this.state.data["name"] == this.props.tasks[i].NAME) {
+                    for(var i in tasks) {
+
+                        if(this.state.data["name"] == tasks[i].NAME) {
                             isValid = false;
                         }
                     }
