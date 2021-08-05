@@ -31,6 +31,8 @@ export default class BashExecService {
 
 			var obj = JSON.parse(e.data);
 
+            console.log("BashExecService: Response: ", obj)
+
             var temp = Object.values(this.listeners);
 
             for(var i in temp) {
@@ -64,6 +66,8 @@ export default class BashExecService {
                 CMD: cmd
             }
         }
+
+        console.log("Sending BashExec request: ", request);
 
         if(!this.wsReady) {
 

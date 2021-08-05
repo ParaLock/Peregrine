@@ -29,17 +29,93 @@ function handleBashAction(request, connection) {
 	if(request.ACTION_TYPE == "BASH") {
 
 		const { spawn } = require('child_process');
-		const child = spawn('ls', ['-lh', '/usr']);
 
-		child.stdout.setEncoding('utf8');
-		child.stdout.on('data', (chunk) => {
+		try {
 
-			var lines = chunk.split('\n');
+			const child = spawn(request.DETAILS.CMD, {
+				shell: true
+			  });
+
+			child.stdout.setEncoding('utf8');
+			child.stdout.on('data', (chunk) => {
+
+				var lines = chunk.split('\n');
+				var response = {
+					MSG: {
+						TYPE: "LOG",
+						DETAIL: {
+							LINES: lines 
+						}
+					}
+				}
+
+				populateHeader(request, response)
+
+				connection.send(JSON.stringify(response));
+
+			});
+
+			child.stderr.on('data', (chunk) => {
+
+				var lines = chunk.split('\n');
+				var response = {
+					MSG: {
+						TYPE: "LOG",
+						DETAIL: {
+							LINES: lines 
+						}
+					}
+				}
+
+				populateHeader(request, response)
+
+				connection.send(JSON.stringify(response));
+
+			});
+
+			child.on('error', function(err) {
+				
+				var response = {
+					MSG: {
+						TYPE: "COMPLETION_STATUS",
+						DETAIL: {
+							STATUS: "FAILED",
+							MSG: err 
+						}
+					}
+				}
+
+				populateHeader(request, response)
+
+				connection.send(JSON.stringify(response));
+
+			});
+
+			child.on('close', (code) => {
+
+				var response = {
+					MSG: {
+						TYPE: "COMPLETION_STATUS",
+						DETAIL: {
+							STATUS: (code == 0) ? "SUCCESS" : "FAILED",
+							MSG: "The cmd " +  request.DETAILS.CMD + " terminated with the code: " + code  
+						}
+					}
+				}
+
+				populateHeader(request, response)
+
+				connection.send(JSON.stringify(response));
+
+			});
+		} catch(e) {
+
 			var response = {
 				MSG: {
-					TYPE: "LOG",
+					TYPE: "COMPLETION_STATUS",
 					DETAIL: {
-						LINES: lines 
+						STATUS: "FAILED",
+						MSG: e.message 
 					}
 				}
 			}
@@ -48,24 +124,9 @@ function handleBashAction(request, connection) {
 
 			connection.send(JSON.stringify(response));
 
-		});
+		}
 
-		child.on('close', (code) => {
 
-			var response = {
-				MSG: {
-					TYPE: "EXIT_STATUS",
-					DETAIL: {
-						CODE: code 
-					}
-				}
-			}
-
-			populateHeader(request, response)
-
-			connection.send(JSON.stringify(response));
-
-		});
 
 	}
 

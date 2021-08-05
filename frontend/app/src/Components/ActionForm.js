@@ -81,6 +81,19 @@ class ActionForm extends React.Component {
             {
                 callback: () => {
 
+                    if(!(this.state.data["bash_cmd"] == "")) {
+
+                        return true;
+                    }
+
+                    return false;
+                }, 
+                msg: "Non empty command required.", 
+                target: "bash_cmd"
+            },
+            {
+                callback: () => {
+
                     var isValid = true;
 
                     for(var i in this.props.actions) {

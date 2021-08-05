@@ -10,7 +10,7 @@ export class TaskNodeFactory extends AbstractReactFactory<TaskNodeModel, Diagram
 	}
 
 	generateReactWidget(event: any): JSX.Element {
-		return <TaskNodeWidget engine={this.engine} size={50} node={event.model} />;
+		return <TaskNodeWidget engine={this.engine} node={event.model} />;
 	}
 
 	generateModel(event: any) {

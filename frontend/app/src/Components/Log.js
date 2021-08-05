@@ -34,18 +34,23 @@ class Log extends React.Component {
                     for(var j in item.MSG.DETAIL.LINES) {
 
                         if(item.MSG.DETAIL.LINES[j] != "")
-                            oldEntries.push(item.MSG.DETAIL.LINES[j]);
+                            oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] ' + item.MSG.DETAIL.LINES[j]);
 
                     }
 
                 }
                 
-                if(item.MSG.TYPE == "EXIT_STATUS") {
+                if(item.MSG.TYPE == "COMPLETION_STATUS") {
 
-                    oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] Action completed with status: ' + item.MSG.DETAIL.CODE);
+                    oldEntries.push('[' + Date.now() + '] [' + item.ACTION_NAME + '] Action completed with status: ' + item.MSG.DETAIL.STATUS + " -- REASON: " + item.MSG.DETAIL.MSG);
                 }   
 
                 this.setState({entries: oldEntries})
+
+
+                this.updateFlag = !this.updateFlag;
+
+                this.forceUpdate();
 
             }, "log_listener");
         }

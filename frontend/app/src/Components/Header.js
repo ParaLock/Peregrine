@@ -25,6 +25,7 @@ export default class Header extends React.Component {
         return <div>
             <CssBaseline />
               <AppBar
+                style={{backgroundColor: 'rgb(100, 167, 11)'}}
                 id="main_app_bar"
                 position="relative"
               >

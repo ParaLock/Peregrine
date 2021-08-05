@@ -1,111 +1,101 @@
 import * as React from 'react';
+import * as _ from 'lodash';
+import { DiagramEngine } from '@projectstorm/react-diagrams-core';
 import { TaskNodeModel } from './TaskNodeModel';
-import { DiagramEngine, PortModelAlignment, PortWidget } from '@projectstorm/react-diagrams';
+import {DefaultPortLabel} from '@projectstorm/react-diagrams-defaults';
 import styled from '@emotion/styled';
-
-export interface TaskNodeWidgetProps {
-	node: TaskNodeModel;
-	engine: DiagramEngine;
-	size?: number;
-}
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
 namespace S {
-	export const Port = styled.div`
-		width: 16px;
-		height: 16px;
-		z-index: 10;
-		background: rgba(0, 0, 0, 0.5);
-		border-radius: 8px;
-		cursor: pointer;
-		&:hover {
-			background: rgba(0, 0, 0, 1);
+	export const Node = styled.div<{ background: string; selected: boolean }>`
+		background-color: ${(p) => p.background};
+		border-radius: 5px;
+		font-family: sans-serif;
+		color: white;
+		border: solid 2px black;
+		overflow: visible;
+		font-size: 11px;
+		border: solid 2px ${(p) => (p.selected ? 'rgb(0,192,255)' : 'black')};
+	`;
+
+	export const Title = styled.div`
+		background: rgba(0, 0, 0, 0.3);
+		display: flex;
+		white-space: nowrap;
+		justify-items: center;
+	`;
+
+	export const TitleName = styled.div`
+		flex-grow: 1;
+		padding: 5px 5px;
+	`;
+
+	export const Ports = styled.div`
+		display: flex;
+		background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.2));
+	`;
+
+	export const PortsContainer = styled.div`
+		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		&:first-of-type {
+			margin-right: 10px;
+		}
+		&:only-child {
+			margin-right: 0px;
 		}
 	`;
 }
 
-/**
- * @author Dylan Vorster
- */
-export class TaskNodeWidget extends React.Component<TaskNodeWidgetProps> {
+const ButtonContainer = styled.div `
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+`;
+
+export interface DefaultNodeProps {
+	node: TaskNodeModel;
+	engine: DiagramEngine;
+}
+
+
+export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
+	generatePort = (port: any) => {
+		return <DefaultPortLabel engine={this.props.engine} port={port} key={port.getID()} />;
+	};
+
 	render() {
+
 		return (
-			<div
-				className={'Task-node'}
-				style={{
-					position: 'relative',
-					width: this.props.size,
-					height: this.props.size
-				}}>
-                    TEST 123
-				{/* <svg
-					width={this.props.size}
-					height={this.props.size}
-					dangerouslySetInnerHTML={{
-						__html:
-							`
-          <g id="Layer_1">
-          </g>
-          <g id="Layer_2">
-            <polygon fill="mediumpurple" stroke="${
-							this.props.node.isSelected() ? 'white' : '#000000'
-						}" stroke-width="3" stroke-miterlimit="10" points="10,` +
-							this.props.size / 2 +
-							` ` +
-							this.props.size / 2 +
-							`,10 ` +
-							(this.props.size - 10) +
-							`,` +
-							this.props.size / 2 +
-							` ` +
-							this.props.size / 2 +
-							`,` +
-							(this.props.size - 10) +
-							` "/>
-          </g>
-        `
-					}}
-				/>
-				<PortWidget
-					style={{
-						top: this.props.size / 2 - 8,
-						left: -8,
-						position: 'absolute'
-					}}
-					port={this.props.node.getPort(PortModelAlignment.LEFT)}
-					engine={this.props.engine}>
-					<S.Port />
-				</PortWidget>
-				<PortWidget
-					style={{
-						left: this.props.size / 2 - 8,
-						top: -8,
-						position: 'absolute'
-					}}
-					port={this.props.node.getPort(PortModelAlignment.TOP)}
-					engine={this.props.engine}>
-					<S.Port />
-				</PortWidget>
-				<PortWidget
-					style={{
-						left: this.props.size - 8,
-						top: this.props.size / 2 - 8,
-						position: 'absolute'
-					}}
-					port={this.props.node.getPort(PortModelAlignment.RIGHT)}
-					engine={this.props.engine}>
-					<S.Port />
-				</PortWidget>
-				<PortWidget
-					style={{
-						left: this.props.size / 2 - 8,
-						top: this.props.size - 8,
-						position: 'absolute'
-					}}
-					port={this.props.node.getPort(PortModelAlignment.BOTTOM)}
-					engine={this.props.engine}>
-					<S.Port />
-				</PortWidget> */}
-			</div>
+			<S.Node
+				data-Task-node-name={this.props.node.getOptions().name}
+				selected={this.props.node.isSelected()}
+				background={  this.props.node.getOptions().color!}>
+				<S.Title>
+					<S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
+				</S.Title>
+                
+                <ButtonContainer>
+
+                <S.PortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.PortsContainer>
+                    <IconButton
+                            size={"small"}
+                            color="inherit"
+                            aria-label="open drawer"
+                            edge={false}
+                            onClick={() => this.props.node.getOptions().onExecute()}
+                        >
+                        <PlayArrowIcon />
+                    </IconButton>
+
+					<S.PortsContainer>{_.map(this.props.node.getOutPorts(), this.generatePort)}</S.PortsContainer>
+                </ButtonContainer>
+
+			</S.Node>
 		);
 	}
 }
