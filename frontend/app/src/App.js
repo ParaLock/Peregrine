@@ -316,6 +316,18 @@ class App extends React.Component {
 
 		}
 
+		removeWorkflow(id) {
+
+			var newWorkflowSet = this.state.workflows.filter((item) => item.ID !== id);
+			
+			this.setState({workflows: [...newWorkflowSet]}, () => {
+
+				this.workflowSelected(null);
+
+			});
+
+		}
+
 		onTaskReset(workflowId, taskId) {
 
 			var task = getTask(taskId, getWorkflow(workflowId, this.state.workflows));
@@ -520,6 +532,23 @@ class App extends React.Component {
 
 		workflowSelected(workflowId) {
 			
+			if(workflowId == null) {
+
+				this.toggleMany([
+					{state: false, name: "task_panel"},
+					{state: false, name: "parameter_panel"},
+					{state: false, name: "conditional_panel"}
+				]);
+
+
+				this.select("workflow", null, () => {
+
+					this.engine.setModel(this.model)
+				});
+
+				return;
+			}
+
 			this.select("workflow", workflowId, () => {
 				
 				var workflow = getWorkflow(workflowId, this.state.workflows);
@@ -926,6 +955,7 @@ class App extends React.Component {
 											onAddWorkflow={() => this.toggle("workflow_form", true, true)}
 											workflowSelected={(id) => this.workflowSelected(id)}
 											onWorkflowExecute={(id) => this.onWorkflowExecute(id)}
+											onRemoveWorkflow={(id) => this.removeWorkflow(id)}
 							/> 
 					</WorkflowPanelWrapper>
 

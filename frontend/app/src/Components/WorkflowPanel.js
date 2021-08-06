@@ -116,7 +116,7 @@ class WorkflowPanel extends React.Component {
                                                 </IconButton>
                                             }
 
-                                            <DeleteButton/>
+                                            <DeleteButton onClick={() =>{this.props.onRemoveWorkflow(workflow.ID)}} />
 
                                         </StyledListItem>
 

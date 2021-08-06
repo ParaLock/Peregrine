@@ -17,7 +17,8 @@ import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import { getWorkflow, getTask, getAction } from '../Common';
 import StyledButton from './StyledButton';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import DeleteButton from './DeleteButton';
+import EditButton from './EditButton';
 
 const StyledListItem = withStyles({
 
@@ -118,9 +119,13 @@ class TaskPanel extends React.Component {
                                                         onClick={(event) => this.props.actionSelected(selectedWorkflow.ID, task.ID, action.ID)}
                                                     >
                                                         <ListItemText primary={action.NAME} />
+                                            
+                                                        <EditButton onClick={() =>{}}/>
+                                                        <DeleteButton onClick={() =>{}}/>
                                                     </ListItem>
                                                 })
                                             }
+
 
                                             <StyledButton
                                                 fullWidth={false}

@@ -1,8 +1,7 @@
-
+import EditIcon from '@material-ui/icons/Edit';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import React from 'react'
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 const StyledButton = withStyles({
 
@@ -12,7 +11,7 @@ const StyledButton = withStyles({
         minWidth: "30px",
         "&:hover": {
             //backgroundColor: "rgba(50, 167, 11, 0.1)",
-            borderColor: "rgb(20, 167, 11)"
+           // borderColor: "rgb(20, 167, 11)"
         }
     },
     label: {
@@ -22,7 +21,7 @@ const StyledButton = withStyles({
 })(Button);
 
 
-class DeleteButton extends React.Component {
+class EditButton extends React.Component {
 
     constructor(props) {
         super(props)
@@ -37,12 +36,12 @@ class DeleteButton extends React.Component {
     }
 
     render() {
-       return <StyledButton onMouseDown={this.handleClick.bind(this)} color={"secondary"} >
-                    <DeleteForeverIcon  style={{padding: "0px"}} id="delete_button"/> 
+       return <StyledButton  onMouseDown={this.handleClick.bind(this)} color={"primary"} >
+                    <EditIcon  style={{padding: "0px"}} id="delete_button"/> 
                 </StyledButton>
     }
 }
 
-export default DeleteButton;
+export default EditButton;
 
 
