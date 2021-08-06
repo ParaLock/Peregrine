@@ -20,6 +20,7 @@ import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormGroup } from '@material-ui/core';
 
+import StyledButton from './StyledButton';
 import {getWorkflow, getTask, getAction} from '../Common';
 
 const styles = (theme) => ({
@@ -203,9 +204,9 @@ class ParameterForm extends React.Component {
  
                     </DialogContent>
                     <DialogActions>         
-                    <Button autoFocus disabled={!this.state.isInputValid} onClick={() => this.onAdd()} color="primary">
+                    <StyledButton autoFocus disabled={!this.state.isInputValid} onClick={() => this.onAdd()} color="primary">
                         Add
-                    </Button>
+                    </StyledButton>
            
                     </DialogActions>
                 </Dialog>

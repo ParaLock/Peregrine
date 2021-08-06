@@ -101,7 +101,7 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
 		return (
 			
 			<S.Node
-				data-Task-node-name={this.props.node.getOptions().name}
+				data-task-node-name={this.props.node.getOptions().name}
 				selected={this.props.node.isSelected()}
 				background={color}>
 				<S.Title>
@@ -118,6 +118,7 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
                             color="inherit"
                             aria-label="open drawer"
                             edge={false}
+							disabled={(state !== "DORMENT")}
                             onClick={() => this.props.node.getOptions().onExecute()}
                         >
 							<PlayArrowIcon />
@@ -127,7 +128,7 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
 
 					{state == "RUNNING" &&
 
-						<CircularProgress size={20} />
+						<CircularProgress  classes={{colorPrimary: "white"}} size={18} />
 
 					}
 		
@@ -136,6 +137,7 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
                             color="inherit"
                             aria-label="open drawer"
                             edge={false}
+							disabled={(state == "RUNNING")}
                             onClick={() => this.props.node.getOptions().onReset()}
                         >
                         <RotateLeftIcon />

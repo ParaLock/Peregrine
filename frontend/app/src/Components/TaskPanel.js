@@ -16,6 +16,8 @@ import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import { getWorkflow, getTask, getAction } from '../Common';
+import StyledButton from './StyledButton';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 const StyledListItem = withStyles({
 
@@ -99,7 +101,9 @@ class TaskPanel extends React.Component {
                                     >
 
                                         <ListItemText primary={task.NAME} secondary={task.DESCRIPTION} />
+             
                                         {this.state["show" + task.ID] ? <ExpandLess /> : <ExpandMore />}
+     
                                     </StyledListItem>
                                     <Collapse in={this.state["show" + task.ID]} timeout="auto" unmountOnExit>
                                         <List component="div" disablePadding>
@@ -118,14 +122,14 @@ class TaskPanel extends React.Component {
                                                 })
                                             }
 
-                                            <Button
+                                            <StyledButton
                                                 fullWidth={false}
                                                 variant="outlined"
                                                 color="primary"
                                                 onClick={() => { this.props.onAddAction(task.ID) }}
                                             >
                                                 Add Action
-                                                </Button>
+                                                </StyledButton>
 
                                         </List>
                                     </Collapse>
@@ -136,14 +140,14 @@ class TaskPanel extends React.Component {
 
                         </List>
                     </Paper>
-                    <Button
+                    <StyledButton
                         fullWidth={true}
                         variant="outlined"
                         color="primary"
                         onClick={this.props.onAddTask.bind(this)}
                     >
                         Add Task
-                        </Button>
+                        </StyledButton>
                 </ListWrapper>
 
             </Wrapper>

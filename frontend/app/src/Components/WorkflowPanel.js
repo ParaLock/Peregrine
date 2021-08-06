@@ -19,6 +19,10 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
+import StyledButton from './StyledButton';
+import DeleteButton from './DeleteButton';
+
+
 const StyledListItem = withStyles({
 
     root: {
@@ -47,6 +51,8 @@ const Wrapper = styled.div`
 
 `;
 
+
+
 class WorkflowPanel extends React.Component {
 
     constructor() {
@@ -56,6 +62,14 @@ class WorkflowPanel extends React.Component {
 
     shouldComponentUpdate() {
         return true;
+    }
+
+    handlePlayClick(evt, id) {
+
+        evt.nativeEvent.stopImmediatePropagation();
+        evt.stopPropagation(); 
+
+        this.props.onWorkflowExecute(id)
     }
 
     render() {
@@ -85,6 +99,7 @@ class WorkflowPanel extends React.Component {
                                                     selected={(selectedWorkflow) ? selectedWorkflow.ID === workflow.ID : false}
                                                     onClick={(event) => this.props.workflowSelected(workflow.ID)}
                                                 >
+
                                             <ListItemText primary={workflow.NAME} secondary={workflow.DESCRIPTION} />
                                             
                                             
@@ -94,12 +109,15 @@ class WorkflowPanel extends React.Component {
                                                     color="inherit"
                                                     aria-label="open drawer"
                                                     edge={false}
-                                                    onClick={() => {this.props.onWorkflowExecute(selectedWorkflow.ID)}}
+                                                    onMouseDown={(evt) => { this.handlePlayClick(evt, selectedWorkflow.ID)}}
                                                 >
                                                     <PlayArrowIcon />
                                                     
                                                 </IconButton>
                                             }
+
+                                            <DeleteButton/>
+
                                         </StyledListItem>
 
                                     })
@@ -107,14 +125,14 @@ class WorkflowPanel extends React.Component {
 
                             </List>
                         </Paper>
-                        <Button 
+                        <StyledButton 
                                 fullWidth={true}  
                                 variant="outlined" 
                                 color="primary"
                                 onClick={this.props.onAddWorkflow.bind(this)}
                         >
                         Add Workflow
-                        </Button>
+                        </StyledButton>
                 </ListWrapper>
             </Wrapper>
           )

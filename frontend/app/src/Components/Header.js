@@ -52,7 +52,7 @@ export default class Header extends React.Component {
         return <div>
             <CssBaseline />
               <AppBar
-                style={{backgroundColor: 'rgb(100, 167, 11)'}}
+                style={{backgroundColor: 'rgb(50, 167, 11)'}}
                 id="main_app_bar"
                 position="relative"
               >
@@ -91,12 +91,14 @@ export default class Header extends React.Component {
                       onChange={this.props.onUpload.bind(this)}
                     />
                     </Box>
+  
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={() => this.toggle("conditional_panel")}
                         edge="start"
             
+                        disabled={(this.props.selected["workflow"] == null) ? true : false}
                       >
                       <AccountTreeIcon />
                     </IconButton>
@@ -106,26 +108,27 @@ export default class Header extends React.Component {
                         onClick={() => this.toggle("parameter_panel")}
                         edge="start"
             
+                        disabled={(this.props.selected["workflow"] == null) ? true : false}
                       >
                       <InputIcon />
-                    </IconButton>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={() => this.props.toggle("log")}
-                        edge="start"
-            
-                      >
-                      <BarChartIcon />
                     </IconButton>
                       <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         onClick={() => this.toggle("task_panel")}
                         edge="start"
-            
+                        disabled={(this.props.selected["workflow"] == null) ? true : false}
                       >
                       <AssignmentIcon />
+                    </IconButton>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={() => this.props.toggle("log")}
+                        edge="start"
+          
+                      >
+                      <BarChartIcon />
                     </IconButton>
 
                   {this.props.children}

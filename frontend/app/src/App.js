@@ -15,10 +15,14 @@ import Log from './Components/Log';
 import ExecServiceFactory from './ExecutionEngine/ExecServices/ExecServiceFactory';
 import ParameterPanel from './Components/ParameterPanel';
 import ParameterForm from './Components/ParameterForm';
+import DeviceHubIcon from '@material-ui/icons/DeviceHub';
 
+import IconButton from '@material-ui/core/IconButton';
 import {getWorkflow, getTask, getAction} from './Common';
 
 import _ from 'lodash'
+
+import StyledButton from './Components/StyledButton';
 
 import createEngine, { 
 	DefaultLinkModel, 
@@ -109,6 +113,13 @@ const ParameterPanelWrapper = styled.div`
 	pointer-events:none;
 `;
 
+
+const LayoutButtonWrapper = styled.div`
+
+	position: fixed;
+	bottom: 0;
+
+`;
 
 const saveFile = async (blob) => {
 	const a = document.createElement('a');
@@ -297,11 +308,11 @@ class App extends React.Component {
 			this.setState({workflows: [...this.state.workflows, newWorkflow]}, 
 			() => {
 
+				this.toggle("workflow_form", false, true)
 				this.workflowSelected(id)
 
 			});
 
-			this.toggle("workflow_form", false, true)
 
 		}
 
@@ -513,12 +524,34 @@ class App extends React.Component {
 				
 				var workflow = getWorkflow(workflowId, this.state.workflows);
 
+				//this.engine.repaintCanvas();
+
 				this.engine.setModel(workflow.DIAGRAM)
-				this.layoutEngine.redistribute(workflow.DIAGRAM);
-				workflow.DIAGRAM.setZoomLevel(200)
-				this.engine.repaintCanvas();
+				
+				if(workflow.LAYOUT_DIRTY) {
+
+					workflow.LAYOUT_DIRTY = false;
+
+					setTimeout(() => {
+
+						this.layoutEngine.redistribute(workflow.DIAGRAM);
+						this.engine.repaintCanvas();
+						
+					}, 1);
+				}
+
 
 			});
+		}
+
+		beautifyDiagram() {
+
+			var workflow = getWorkflow(this.state.selected["workflow"], this.state.workflows);
+			if(workflow) {
+
+				this.layoutEngine.redistribute(workflow.DIAGRAM);
+				this.engine.repaintCanvas();
+			}
 		}
 
 		actionSelected(workflowId, taskId, actionId) {
@@ -701,6 +734,8 @@ class App extends React.Component {
 						workflows[i]["PARAMETERS"] = [];
 					}
 
+					workflows[i].LAYOUT_DIRTY = true;
+
 					for(var j in workflows[i].TASKS) {
 
 						var task = workflows[i].TASKS[j];
@@ -751,10 +786,24 @@ class App extends React.Component {
 						});
 					});
 
+
 				}
 
 				this.setState({workflows: [...workflows]}, ()=> {
-					this.engine.repaintCanvas();
+
+					
+					// for(var i in this.state.workflows) {
+
+					// 	var workflow = this.state.workflows[i];
+
+					// 	this.engine.setModel(workflow.DIAGRAM);
+
+					// 	this.layoutEngine.redistribute(workflow.DIAGRAM);
+
+					// 	this.engine.repaintCanvas();
+					// }
+
+					//this.engine.repaintCanvas();
 				});
 				
 			};
@@ -862,7 +911,7 @@ class App extends React.Component {
 					toggleMany = {this.toggleMany.bind(this)}
 					onDownload={this.onDownload.bind(this)}
 					onUpload={this.onUpload.bind(this)}
-
+					selected={this.state.selected}
 
 				></Header>
 
@@ -917,6 +966,19 @@ class App extends React.Component {
 						<Log execServiceFactory={this.execServiceFactory} />
 					</Drawer>
 				</React.Fragment>
+
+				<LayoutButtonWrapper>
+				<IconButton
+					size={"large"}
+					color="secondary"
+					aria-label="open drawer"
+					edge={false}
+					onClick={() => this.beautifyDiagram()}
+				>
+					<DeviceHubIcon />
+					
+				</IconButton>
+				</LayoutButtonWrapper>
 
 			</Wrapper>
 		}

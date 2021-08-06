@@ -12,6 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import TextField from '@material-ui/core/TextField';
 
+import StyledButton from './StyledButton';
+
 const styles = (theme) => ({
     root: {
       margin: 0,
@@ -209,9 +211,9 @@ class WorkflowForm extends React.Component {
 
                     </DialogContent>
                     <DialogActions>         
-                    <Button autoFocus disabled={!this.state.isInputValid} onClick={() => this.onAdd()} color="primary">
+                    <StyledButton autoFocus disabled={!this.state.isInputValid} onClick={() => this.onAdd()} >
                         Add
-                    </Button>
+                    </StyledButton>
            
                     </DialogActions>
                 </Dialog>

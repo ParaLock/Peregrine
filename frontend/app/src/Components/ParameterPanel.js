@@ -17,6 +17,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import { getWorkflow, getTask, getAction } from '../Common';
 
+import StyledButton from './StyledButton';
 const StyledListItem = withStyles({
 
     root: {
@@ -91,14 +92,14 @@ class ParameterPanel extends React.Component {
 
                             </List>
                         </Paper>
-                        <Button 
+                        <StyledButton 
                                 fullWidth={true}  
                                 variant="outlined" 
                                 color="primary"
                                 onClick={this.props.onAddParameter.bind(this)}
                         >
                         Add Parameter
-                        </Button>
+                        </StyledButton>
                 </ListWrapper>
             </Wrapper>
           )
