@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import RotateLeftIcon from '@material-ui/icons/RotateLeft';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 namespace S {
 	export const Node = styled.div<{ background: string; selected: boolean }>`
@@ -84,11 +85,25 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
 
 	render() {
 
+		var state = this.props.node.getState();
+		var color = "rgb(0,192,255)";
+
+		if(state == "SUCCESS") {
+			color = 'rgb(100, 167, 11)';
+		}
+
+		if(state == "FAILED") {
+			color = 'rgb(100, 0, 0)';
+		}
+
+		console.log(this.props.node.getState());
+
 		return (
+			
 			<S.Node
 				data-Task-node-name={this.props.node.getOptions().name}
 				selected={this.props.node.isSelected()}
-				background={  this.props.node.getOptions().color!}>
+				background={color}>
 				<S.Title>
 					<S.TitleName>{this.props.node.getOptions().name}</S.TitleName>
 				</S.Title>
@@ -96,15 +111,26 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
                 <ButtonContainer>
 
                 <S.InPortsContainer>{_.map(this.props.node.getInPorts(), this.generatePort)}</S.InPortsContainer>
-                    <IconButton
+
+					{ state !== "RUNNING" && 
+						<IconButton
                             size={"small"}
                             color="inherit"
                             aria-label="open drawer"
                             edge={false}
                             onClick={() => this.props.node.getOptions().onExecute()}
                         >
-                        <PlayArrowIcon />
-                    </IconButton>
+							<PlayArrowIcon />
+							
+                    	</IconButton>
+					}
+
+					{state == "RUNNING" &&
+
+						<CircularProgress size={20} />
+
+					}
+		
                     <IconButton
                             size={"small"}
                             color="inherit"

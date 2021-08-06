@@ -313,11 +313,10 @@ class App extends React.Component {
 			task.ACTION_IDX = -1;
 
 			var node = this.getNode(taskId);
+			node.setState("DORMENT");
 
-			node.options.color = this.stateToColor("DORMENT");
-
-			this.engine.repaintCanvas();
 			this.forceUpdate();
+			this.engine.repaintCanvas();
 			
 		}
 
@@ -337,6 +336,13 @@ class App extends React.Component {
 
 			task.ACTION_IDX = 0;
 
+			var node = this.getNode(task.ID);
+			node.setState("RUNNING");
+			task.STATE = "RUNNING";
+
+			this.forceUpdate();
+			this.engine.repaintCanvas();
+
 			var action = task.ACTIONS[task.ACTION_IDX];
 
 			var execService = this.execServiceFactory.getService(action.TYPE);
@@ -345,32 +351,28 @@ class App extends React.Component {
 
 				if(response.MSG.TYPE == "COMPLETION_STATUS") {
 					
-
-					
 					if(response.MSG.DETAIL.STATUS == "SUCCESS") {
 
 						var node = this.getNode(task.ID);
-						node.options.color = this.stateToColor("SUCCESS");
+						node.setState("SUCCESS")
 
 					} else if (response.MSG.DETAIL.STATUS == "FAILED") {
 
 						var node = this.getNode(task.ID);
-						//node.options.color = 'rgb(100, 0, 0)';
-
-						node.options.color = this.stateToColor("FAILED");
+						node.setState("FAILED");
 
 						task.STATE = response.MSG.DETAIL.STATUS;
 
-						this.engine.repaintCanvas();
 						this.forceUpdate();
+						this.engine.repaintCanvas();
 
 						return;
 					}	
 
 					task.STATE = response.MSG.DETAIL.STATUS;
 
-					this.engine.repaintCanvas();
 					this.forceUpdate();
+					this.engine.repaintCanvas();
 
 					if(task.ACTION_IDX > (task.ACTIONS.length - 1)) {
 
@@ -579,6 +581,31 @@ class App extends React.Component {
 
 		}
 
+		onWorkflowExecute(workflowId) {
+
+			var workflow = getWorkflow(workflowId, this.state.workflows);
+
+			const nodes = workflow.DIAGRAM.getNodes();
+
+			var startingNodes = [];
+
+			_.forEach(nodes, node => {
+
+				if(node.options.type == "Task") {
+
+					console.log(node);
+
+					var inport = node.getInPorts();
+	
+					console.log(inport)
+				}
+
+			});
+
+			console.log(startingNodes);
+
+		}
+
 		addParameter(data) {
 
 			var id = uuidv4();
@@ -640,22 +667,6 @@ class App extends React.Component {
 
 		}
 
-		stateToColor(state) {
-
-			var color = "rgb(0,192,255)";
-
-			if(state == "SUCCESS") {
-				color = 'rgb(100, 167, 11)';
-			}
-
-			if(state == "FAILED") {
-				color = 'rgb(100, 0, 0)';
-			}
-
-			return color;
-
-		}
-
 		async onUpload(e) {
 
 			e.preventDefault()
@@ -673,7 +684,6 @@ class App extends React.Component {
 
 					var nodeExecFuncs = {}
 					var nodeResetFuncs = {}
-					var nodeColors = {}
 
 					var newModel = new DiagramModel();
 					//newModel.deserializeModel(workflowsp[i].DIAGRAM, this.engine);
@@ -713,8 +723,6 @@ class App extends React.Component {
 						nodeExecFuncs[task["ID"]] = t(workflows[i].ID, task.ID, this)
 						nodeResetFuncs[task["ID"]] = t2(workflows[i].ID, task.ID, this)
 
-						nodeColors[task.ID] = this.stateToColor(task.STATE);
-
 						for(var k in task.ACTIONS) {
 
 							if(!("ID" in task.ACTIONS[k])) {
@@ -726,8 +734,6 @@ class App extends React.Component {
 					workflows[i].DIAGRAM = newModel;
 
 					const nodes = workflows[i].DIAGRAM.getNodes();
-					
-					//  console.log(nodes)
 
 					_.forEach(nodes, node => {
 
@@ -739,8 +745,6 @@ class App extends React.Component {
 							node.options.onExecute = (workspaceId, taskId) => {}
 							node.options.onReset = (workspaceId, taskId) => {}
 						}
-
-						node.options.color = nodeColors[node.options.id];
 
 						node.registerListener({
 							eventDidFire: e => this.handleNodeEvent(e)	
@@ -872,6 +876,7 @@ class App extends React.Component {
 											onClose={() => this.toggle("workflow_form", false, true)}
 											onAddWorkflow={() => this.toggle("workflow_form", true, true)}
 											workflowSelected={(id) => this.workflowSelected(id)}
+											onWorkflowExecute={(id) => this.onWorkflowExecute(id)}
 							/> 
 					</WorkflowPanelWrapper>
 

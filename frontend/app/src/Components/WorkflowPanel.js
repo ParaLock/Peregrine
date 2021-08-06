@@ -12,10 +12,12 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import ForumIcon from '@material-ui/icons/Forum';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import Button from '@material-ui/core/Button';
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import { getWorkflow, getTask, getAction } from '../Common';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 
 const StyledListItem = withStyles({
 
@@ -62,7 +64,6 @@ class WorkflowPanel extends React.Component {
 
         return (
 
-
             <Wrapper >
                 <ListWrapper>
 
@@ -80,11 +81,25 @@ class WorkflowPanel extends React.Component {
                                 { this.props.model.map((workflow)=> {
 
                                         return <StyledListItem
-                                            button
-                                            selected={(selectedWorkflow) ? selectedWorkflow.ID === workflow.ID : false}
-                                            onClick={(event) => this.props.workflowSelected(workflow.ID)}
-                                        >
+                                                    button
+                                                    selected={(selectedWorkflow) ? selectedWorkflow.ID === workflow.ID : false}
+                                                    onClick={(event) => this.props.workflowSelected(workflow.ID)}
+                                                >
                                             <ListItemText primary={workflow.NAME} secondary={workflow.DESCRIPTION} />
+                                            
+                                            
+                                            {((selectedWorkflow) ? selectedWorkflow.ID === workflow.ID : false) && 
+                                                <IconButton
+                                                    size={"large"}
+                                                    color="inherit"
+                                                    aria-label="open drawer"
+                                                    edge={false}
+                                                    onClick={() => {this.props.onWorkflowExecute(selectedWorkflow.ID)}}
+                                                >
+                                                    <PlayArrowIcon />
+                                                    
+                                                </IconButton>
+                                            }
                                         </StyledListItem>
 
                                     })

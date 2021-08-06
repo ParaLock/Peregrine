@@ -9,6 +9,7 @@ export interface TaskNodeModelOptions extends BasePositionModelOptions {
 	color?: string;
     onExecute: any;
     onReset: any;
+	state: any;
 }
 
 export interface TaskNodeModelGenerics extends NodeModelGenerics {
@@ -18,6 +19,7 @@ export interface TaskNodeModelGenerics extends NodeModelGenerics {
 export class TaskNodeModel extends NodeModel<TaskNodeModelGenerics> {
 	protected portsIn: DefaultPortModel[];
 	protected portsOut: DefaultPortModel[];
+	protected state: string;
 
 	constructor(name: string, color: string);
 	constructor(options?: TaskNodeModelOptions);
@@ -36,6 +38,16 @@ export class TaskNodeModel extends NodeModel<TaskNodeModelGenerics> {
 		});
 		this.portsOut = [];
 		this.portsIn = [];
+		this.state = "DORMENT";
+	}
+
+	setState(state: string) {
+
+		this.state = state;
+	}
+
+	getState() : string {
+		return this.state;
 	}
 
 	doClone(lookupTable: {}, clone: any): void {
@@ -52,6 +64,8 @@ export class TaskNodeModel extends NodeModel<TaskNodeModelGenerics> {
 			this.portsOut.splice(this.portsOut.indexOf(port), 1);
 		}
 	}
+
+
 
 	addPort<T extends DefaultPortModel>(port: T): T {
 		super.addPort(port);
@@ -96,6 +110,7 @@ export class TaskNodeModel extends NodeModel<TaskNodeModelGenerics> {
 	deserialize(event: DeserializeEvent<this>) {
 		super.deserialize(event);
 		this.options.name = event.data.name;
+		this.state = event.data.state;
 		this.options.color = event.data.color;
 		this.portsIn = _.map(event.data.portsInOrder, (id) => {
 			return this.getPortFromID(id);
@@ -110,6 +125,7 @@ export class TaskNodeModel extends NodeModel<TaskNodeModelGenerics> {
 			...super.serialize(),
 			name: this.options.name,
 			color: this.options.color,
+			state: this.state,
 			portsInOrder: _.map(this.portsIn, (port) => {
 				return port.getID();
 			}),
