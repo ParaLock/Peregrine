@@ -347,7 +347,7 @@ class App extends React.Component {
 			
 		}
 
-		async onTaskExecute(workflowId, taskId, callback = {}) {
+		async onTaskExecute(workflowId, taskId, callback = (status) => {}) {
 
 			var task = getTask(taskId, getWorkflow(workflowId, this.state.workflows));
 
@@ -405,7 +405,7 @@ class App extends React.Component {
 
 						task.ACTION_IDX = -1;
 
-						callback();
+						callback(response.MSG.DETAIL.STATUS);
 
 						return;
 					}
@@ -716,11 +716,6 @@ class App extends React.Component {
 
 			});
 
-			// var execDepends = function(self, node) {
-
-				
-			// }
-
 			this.workflowExecutionInfo.bfsQueue = []
 
 			for(var i in startingNodes) {
@@ -733,30 +728,34 @@ class App extends React.Component {
 				var node = self.workflowExecutionInfo.bfsQueue.shift();
 
 
-				self.onTaskExecute(self.state.selected["workflow"], node.options.id, () => {
+				self.onTaskExecute(self.state.selected["workflow"], node.options.id, (status) => {
 
-					var output = node.getOutPorts()[0];
+					if(status == "SUCCESS") {
 
-					var deps = Object.keys(output.links).map((key) => {
-						return output.links[key].targetPort.parent;
-					});
+						var output = node.getOutPorts()[0];
 
-
-					for(var i in deps) {
-
-						var alreadyExists = self.workflowExecutionInfo.bfsQueue.find((item) => {
-							return item.options.id == deps[i].options.id;
+						var deps = Object.keys(output.links).map((key) => {
+							return output.links[key].targetPort.parent;
 						});
-
-						if(!alreadyExists) {
-							self.workflowExecutionInfo.bfsQueue.push(deps[i]);
+	
+	
+						for(var i in deps) {
+	
+							var alreadyExists = self.workflowExecutionInfo.bfsQueue.find((item) => {
+								return item.options.id == deps[i].options.id;
+							});
+	
+							if(!alreadyExists) {
+								self.workflowExecutionInfo.bfsQueue.push(deps[i]);
+							}
+						}
+	
+						if(self.workflowExecutionInfo.bfsQueue.length > 0) {
+	
+							execNode(self);
 						}
 					}
 
-					if(self.workflowExecutionInfo.bfsQueue.length > 0) {
-
-						execNode(self);
-					}
 				})
 
 			}
