@@ -394,9 +394,10 @@ class App extends React.Component {
 						this.engine.repaintCanvas();
 
 						return;
-					}	
+					}
 
 					task.STATE = response.MSG.DETAIL.STATUS;
+
 
 					this.forceUpdate();
 					this.engine.repaintCanvas();
@@ -414,6 +415,13 @@ class App extends React.Component {
 
 					task.ACTION_IDX++;
 					
+					var node = this.getNode(task.ID);
+					node.setState("RUNNING");
+					task.STATE = "RUNNING";
+
+					this.forceUpdate();
+					this.engine.repaintCanvas();
+
 					execService.execute(action.DETAILS.CMD, action.NAME, execNext);
 				}
 			}
@@ -651,10 +659,14 @@ class App extends React.Component {
 		onAddAction(id) {
 			
 
-			this.taskSelected(this.state.selected["workflow"], id, ()=> {
+			this.setState({actionFormMode: "CREATE"}, ()=> {
 
-				this.toggle("action_form", true, true)
+				this.taskSelected(this.state.selected["workflow"], id, ()=> {
+
+					this.toggle("action_form", true, true)
+				});
 			});
+
 
 		}
 
@@ -846,7 +858,6 @@ class App extends React.Component {
 					var nodeResetFuncs = {}
 
 					var newModel = new DiagramModel();
-					//newModel.deserializeModel(workflowsp[i].DIAGRAM, this.engine);
 
 					if(workflows[i].DIAGRAM) {
 
@@ -916,22 +927,7 @@ class App extends React.Component {
 
 				}
 
-				this.setState({workflows: [...workflows]}, ()=> {
-
-					
-					// for(var i in this.state.workflows) {
-
-					// 	var workflow = this.state.workflows[i];
-
-					// 	this.engine.setModel(workflow.DIAGRAM);
-
-					// 	this.layoutEngine.redistribute(workflow.DIAGRAM);
-
-					// 	this.engine.repaintCanvas();
-					// }
-
-					//this.engine.repaintCanvas();
-				});
+				this.setState({workflows: [...workflows]}, ()=> {});
 				
 			};
 
