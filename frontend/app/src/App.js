@@ -206,6 +206,7 @@ class App extends React.Component {
 					"conditional": null,
 					"parameter": null
 				},
+				actionFormMode: "CREATE",
 
 				workflows: []
 			}
@@ -419,6 +420,50 @@ class App extends React.Component {
 				execService.execute(action.DETAILS.CMD, action.NAME, execNext);
 			}
 
+		}
+
+		onEditAction(workflowId, taskId, actionId) {
+
+			this.taskSelected(workflowId, taskId, () => {
+				this.select("action", actionId, () => {
+					this.setState({actionFormMode: "EDIT"}, () => {
+
+						this.toggle("action_form", true, true);
+
+					});
+
+				})
+			});
+
+		}
+
+		editAction(data) {
+
+			this.setState({actionFormMode: "CREATE"}, () => {
+
+				this.toggle("action_form", false, true);
+
+				var newState = [...this.state.workflows];
+				var action = getAction(this.state.selected["action"], getTask(this.state.selected["task"], getWorkflow(this.state.selected["workflow"], newState)));
+
+				action.NAME = data.name;
+				action.TYPE = data.type;
+				action.DETAILS.CMD = data.bash_cmd;
+
+				this.setState({workflows: newState});
+				
+			});
+
+		}
+
+		removeAction(workflowId, taskId, actionId) {
+
+			var newState = [...this.state.workflows];
+			var task = getTask(taskId, getWorkflow(workflowId, newState));
+
+			task.ACTIONS = task.ACTIONS.filter((item) => item.ID !== actionId);
+
+			this.setState({workflows: newState});
 		}
 
 		addTask(data) {
@@ -924,6 +969,8 @@ class App extends React.Component {
                         open={this.state.openStates["action_form"]} 
                         onClose={() => this.toggle("action_form", false, true)}
 						onAdd={(data) => this.addAction(data)}
+						onEdit={(data) => this.editAction(data)}
+						mode={this.state.actionFormMode}
         		/>
 
 				<ParameterForm 
@@ -969,6 +1016,8 @@ class App extends React.Component {
 											model={this.state.workflows}
 											onAddTask={() => this.toggle("task_form", true, true)}
 											onAddAction={(taskId) => this.onAddAction(taskId)}
+											onEditAction={(workflowId, taskId, actionId) => this.onEditAction(workflowId, taskId, actionId)}
+											onRemoveAction={(workflowId, taskId, actionId) => this.removeAction(workflowId, taskId, actionId)}
 							/> 
 
 					</TaskPanelWrapper>

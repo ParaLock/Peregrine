@@ -18,6 +18,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import { FormGroup } from '@material-ui/core';
+import { getWorkflow, getTask, getAction } from '../Common';
+
 
 const styles = (theme) => ({
     root: {
@@ -120,7 +122,32 @@ class ActionForm extends React.Component {
     componentDidUpdate(prevProps, prevState) {
 
         if (!prevProps.open && this.props.open) {
-            this.validateInputs();
+
+            if(this.props.mode == "EDIT") {
+
+                var action = getAction(this.props.selected["action"], getTask(this.props.selected["task"], getWorkflow(this.props.selected["workflow"], this.props.model)));
+
+                console.log(action);
+
+                var errors = {...this.state.errors};
+                errors.name = "";
+                errors.type = "";
+                errors.bash_cmd = "";
+
+                var data = {...this.state.data};
+                data.name = action.NAME;
+                data.type = action.TYPE;
+                data.bash_cmd = action.DETAILS.CMD;
+
+                this.setState({errors: errors, data: data}, () => {
+
+                    this.validateInputs();
+                });
+                
+            } else {
+
+                this.validateInputs();
+            }
         }
 
     }
@@ -128,6 +155,11 @@ class ActionForm extends React.Component {
     onAdd() {
 
         this.props.onAdd(this.state.data);
+    }
+
+    onEdit() {
+        
+        this.props.onEdit(this.state.data);
     }
 
     validateInputs() {
@@ -278,9 +310,19 @@ class ActionForm extends React.Component {
 
                     </DialogContent>
                     <DialogActions>         
-                    <Button autoFocus disabled={!this.state.isInputValid} onClick={() => this.onAdd()} color="primary">
-                        Add
-                    </Button>
+                    
+                    {this.props.mode == "CREATE" && 
+                        <Button autoFocus disabled={!this.state.isInputValid} onClick={() => this.onAdd()} color="primary">
+                            Add
+                        </Button>
+                    }
+
+                    { this.props.mode == "EDIT" && 
+                        <Button autoFocus disabled={!this.state.isInputValid} onClick={() => this.onEdit()} color="primary">
+                            Edit
+                        </Button>
+                    }
+
            
                     </DialogActions>
                 </Dialog>

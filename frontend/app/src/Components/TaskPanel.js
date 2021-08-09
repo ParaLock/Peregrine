@@ -120,8 +120,8 @@ class TaskPanel extends React.Component {
                                                     >
                                                         <ListItemText primary={action.NAME} />
                                             
-                                                        <EditButton onClick={() =>{}}/>
-                                                        <DeleteButton onClick={() =>{}}/>
+                                                        <EditButton onClick={() =>{ this.props.onEditAction(selectedWorkflow.ID, task.ID, action.ID) }}/>
+                                                        <DeleteButton onClick={() =>{ this.props.onRemoveAction(selectedWorkflow.ID, task.ID, action.ID) }}/>
                                                     </ListItem>
                                                 })
                                             }

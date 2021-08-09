@@ -86,7 +86,7 @@ export class TaskNodeWidget extends React.Component<DefaultNodeProps> {
 
 		return (
 			<S.Node
-				data-Task-node-name={this.props.node.getOptions().name}
+				data-task-node-name={this.props.node.getOptions().name}
 				selected={this.props.node.isSelected()}
 				background={  this.props.node.getOptions().color!}>
 				<S.Title>
