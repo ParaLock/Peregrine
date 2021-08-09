@@ -212,6 +212,9 @@ class App extends React.Component {
 			}
 
 			this.execServiceFactory = new ExecServiceFactory();
+			this.workflowExecutionInfo = {
+				bfsQueue: []
+			}
 
 		}
 
@@ -344,7 +347,7 @@ class App extends React.Component {
 			
 		}
 
-		onTaskExecute(workflowId, taskId) {
+		async onTaskExecute(workflowId, taskId, callback = {}) {
 
 			var task = getTask(taskId, getWorkflow(workflowId, this.state.workflows));
 
@@ -401,6 +404,8 @@ class App extends React.Component {
 					if(task.ACTION_IDX > (task.ACTIONS.length - 1)) {
 
 						task.ACTION_IDX = -1;
+
+						callback();
 
 						return;
 					}
@@ -700,18 +705,67 @@ class App extends React.Component {
 
 				if(node.options.type == "Task") {
 
-					console.log(node);
+					var inport = node.getInPorts()[0];
+					
+					var links = Object.keys(inport.links)
 
-					var inport = node.getInPorts();
-	
-					console.log(inport)
+					if(links.length == 0) {
+						startingNodes.push(node);
+					}
 				}
 
 			});
 
-			console.log(startingNodes);
+			// var execDepends = function(self, node) {
+
+				
+			// }
+
+			this.workflowExecutionInfo.bfsQueue = []
+
+			for(var i in startingNodes) {
+
+				this.workflowExecutionInfo.bfsQueue.push(startingNodes[i]);
+			}
+
+			var execNode = function(self) {
+
+				var node = self.workflowExecutionInfo.bfsQueue.shift();
+
+
+				self.onTaskExecute(self.state.selected["workflow"], node.options.id, () => {
+
+					var output = node.getOutPorts()[0];
+
+					var deps = Object.keys(output.links).map((key) => {
+						return output.links[key].targetPort.parent;
+					});
+
+
+					for(var i in deps) {
+
+						var alreadyExists = self.workflowExecutionInfo.bfsQueue.find((item) => {
+							return item.options.id == deps[i].options.id;
+						});
+
+						if(!alreadyExists) {
+							self.workflowExecutionInfo.bfsQueue.push(deps[i]);
+						}
+					}
+
+					if(self.workflowExecutionInfo.bfsQueue.length > 0) {
+
+						execNode(self);
+					}
+				})
+
+			}
+
+			execNode(this)
 
 		}
+
+
 
 		addParameter(data) {
 
